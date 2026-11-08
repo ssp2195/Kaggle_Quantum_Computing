@@ -1,9 +1,14 @@
 name: native-kickmix-smoke
 on:
+  push:
+    branches: [benchmark1-direct-phase-experiments-20261108]
   workflow_dispatch:
 jobs:
   native:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      NPY_NUM_BUILD_JOBS: '2'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
