@@ -2,6 +2,14 @@ name: numerical-prescreen
 on:
   push:
     branches: [benchmark1-direct-phase-experiments-20261108]
+    paths:
+      - 'src/direct_phase.py'
+      - 'src/kickmix_phase.py'
+      - 'src/cli.py'
+      - 'src/verify.py'
+      - 'tests/test_direct_phase.py'
+      - 'tests/test_kickmix_optional.py'
+      - '.github/workflows/numerical.yml'
   workflow_dispatch:
 jobs:
   test:
