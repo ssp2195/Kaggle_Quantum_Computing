@@ -1,0 +1,44 @@
+name: hybrid-full-200m-trajectories
+on:
+  push:
+    branches: [benchmark1-direct-phase-experiments-20261108]
+    paths:
+      - '.github/workflows/hybrid-full.yml'
+      - 'src/hybrid_*.py'
+  workflow_dispatch:
+jobs:
+  full-verification:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        variant: ['8-26', '8-28', '9-28']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy pybind11==2.12.0
+      - name: Compile real C++20 kickmix
+        run: |
+          git clone --depth 1 https://github.com/quantumlib/Qualtran.git /tmp/Qualtran
+          python -m pip install /tmp/Qualtran/kickmix
+      - name: Build and sample-check full 22-qubit candidate
+        shell: bash
+        run: |
+          IFS=- read P Q <<< "${{ matrix.variant }}"
+          python -m src.hybrid_cli build --segment-bits "$P" --precision "$Q" --output "out/hybrid_${P}_${Q}.kmb"
+          python -m src.hybrid_cli verify "out/hybrid_${P}_${Q}.kmb" --random-count 512 --output "runs/hybrid_${P}_${Q}_sample.json"
+      - name: Full 3,133,452 inputs x 64 shots = 200,540,928 trajectories
+        shell: bash
+        run: |
+          IFS=- read P Q <<< "${{ matrix.variant }}"
+          python -u -m src.hybrid_cli verify "out/hybrid_${P}_${Q}.kmb" --full --output "runs/hybrid_${P}_${Q}_full.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: full-hybrid-${{ matrix.variant }}
+          path: |
+            out/*.kmb
+            runs/*.json
