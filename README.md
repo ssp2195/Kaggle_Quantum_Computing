@@ -33,3 +33,26 @@ The full development verifier checks exactly one named register x, its width, al
 See results/findings.md and results/numerical_screen.json. All three approximations pass the numerical tolerance on the complete integer domain, but straightforward parity decompositions appear much more expensive in fine Z_POW rotations than the reference. Numerical success is **not** a full kickmix or Kaggle verification result.
 
 Code consists of a numerical model, native circuit builder, development verifier, CLI and tests. No RL or extraneous framework has been added.
+
+
+## Authoritative Kaggle verification (competition files not redistributed)
+
+Once you have accepted the Kaggle rules and configured the Kaggle CLI, download
+the **official** data and use the verifier shipped with the competition:
+
+    mkdir -p downloads official
+    kaggle competitions download google-verifiable-quantum-circuit-compilation -p downloads
+    python -m zipfile -e downloads/google-verifiable-quantum-circuit-compilation.zip official
+    bash scripts/verify_official.sh out/invsqrt_experiment.kmb official
+
+For a fast *non-authoritative* 64-input smoke run, use
+`MAX_X=64 MAX_WORKERS=1 bash scripts/verify_official.sh ...`.
+Use the default full range of 3,133,452 inputs and 64 trajectories each
+before declaring the candidate valid. Inspect the verifier's JSON `status`,
+`verified_shots`, `num_qubits`, `toffoli_equivalent` and `score`.
+Do not commit downloaded competition data, credentials, or generated .kmb files.
+The verifier and baseline belong to the competition, not this repository.
+
+Native smoke tests are wired to GitHub Actions and install a current upstream
+kickmix build; if the upstream API changes, inspect the workflow logs.
+The competition's private test salt cannot be reproduced locally.
