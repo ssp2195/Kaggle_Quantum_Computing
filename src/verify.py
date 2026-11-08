@@ -31,11 +31,11 @@ def verify_kmb(path, *, max_x=MAX_X, shots_per_x=64, competition_contract=True):
         # Integer-sqrt reference: floor(2**65 / sqrt(x)) / 2**65.
         expected = math.isqrt((1 << 130)//x) / float(1 << 65)
         tolerance = TOL*expected
-        # read_shot_phase returns the complete phase in turns.
+        # kickmix reports the complete phase in half-turns (Z_POW exponent).
         for shot in range(shots_per_x):
             read_x = sim.read_within_shot("x", shot, out=int)
             clean = sim.read_within_shot(scratch, shot, out=int) == 0
-            phase = float(sim.read_shot_phase(shot)) % 1.0
+            phase = (float(sim.read_shot_phase(shot)) / 2.0) % 1.0
             error = abs((phase-expected+0.5) % 1-0.5)
             worst = max(worst, error/tolerance)
             if read_x != x or not clean or error > tolerance:
