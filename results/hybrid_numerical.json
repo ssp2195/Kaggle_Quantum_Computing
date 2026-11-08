@@ -1,0 +1,137 @@
+[
+  {
+    "segment_bits": 7,
+    "precision": 30,
+    "interval_count": 384,
+    "table_rows": 512,
+    "coefficient_widths": [
+      31,
+      23,
+      15
+    ],
+    "worst_ratio": 2.4917980685482575,
+    "worst_x": 1056767,
+    "failed_inputs": 66663,
+    "passed": false
+  },
+  {
+    "segment_bits": 8,
+    "precision": 24,
+    "interval_count": 768,
+    "table_rows": 1024,
+    "coefficient_widths": [
+      25,
+      16,
+      7
+    ],
+    "worst_ratio": 2.4758647260178126,
+    "worst_x": 823295,
+    "failed_inputs": 145624,
+    "passed": false
+  },
+  {
+    "segment_bits": 8,
+    "precision": 26,
+    "interval_count": 768,
+    "table_rows": 1024,
+    "coefficient_widths": [
+      27,
+      18,
+      9
+    ],
+    "worst_ratio": 0.6177643622240873,
+    "worst_x": 947199,
+    "failed_inputs": 0,
+    "passed": true
+  },
+  {
+    "segment_bits": 8,
+    "precision": 28,
+    "interval_count": 768,
+    "table_rows": 1024,
+    "coefficient_widths": [
+      29,
+      20,
+      11
+    ],
+    "worst_ratio": 0.3294718639041472,
+    "worst_x": 1110015,
+    "failed_inputs": 0,
+    "passed": true
+  },
+  {
+    "segment_bits": 8,
+    "precision": 30,
+    "interval_count": 768,
+    "table_rows": 1024,
+    "coefficient_widths": [
+      31,
+      22,
+      13
+    ],
+    "worst_ratio": 0.3118149275002276,
+    "worst_x": 1052671,
+    "failed_inputs": 0,
+    "passed": true
+  },
+  {
+    "segment_bits": 9,
+    "precision": 26,
+    "interval_count": 1536,
+    "table_rows": 2048,
+    "coefficient_widths": [
+      27,
+      17,
+      7
+    ],
+    "worst_ratio": 0.6323466028673275,
+    "worst_x": 988159,
+    "failed_inputs": 0,
+    "passed": true
+  },
+  {
+    "segment_bits": 9,
+    "precision": 28,
+    "interval_count": 1536,
+    "table_rows": 2048,
+    "coefficient_widths": [
+      29,
+      19,
+      9
+    ],
+    "worst_ratio": 0.15536292385747447,
+    "worst_x": 1031167,
+    "failed_inputs": 0,
+    "passed": true
+  },
+  {
+    "segment_bits": 9,
+    "precision": 30,
+    "interval_count": 1536,
+    "table_rows": 2048,
+    "coefficient_widths": [
+      31,
+      21,
+      11
+    ],
+    "worst_ratio": 0.061487744835893754,
+    "worst_x": 1052671,
+    "failed_inputs": 0,
+    "passed": true
+  },
+  {
+    "segment_bits": 10,
+    "precision": 28,
+    "interval_count": 3072,
+    "table_rows": 4096,
+    "coefficient_widths": [
+      29,
+      18,
+      7
+    ],
+    "worst_ratio": 0.16578788592935056,
+    "worst_x": 890623,
+    "failed_inputs": 0,
+    "passed": true
+  }
+]

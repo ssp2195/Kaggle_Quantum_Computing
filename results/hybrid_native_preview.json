@@ -1,0 +1,44 @@
+[
+  {
+    "segment_bits": 8,
+    "precision": 26,
+    "qubits": 165,
+    "instructions": 72593,
+    "toffoli_like": 4490,
+    "t_like": 1,
+    "fine_rotations": 119,
+    "lower_bound_qc": 740891.25,
+    "sampled_inputs": 2509,
+    "shots_per_x": 64,
+    "sampled_failures": 0,
+    "sampled_worst_ratio": 0.5269444074265119
+  },
+  {
+    "segment_bits": 8,
+    "precision": 28,
+    "qubits": 177,
+    "instructions": 79585,
+    "toffoli_like": 4808,
+    "t_like": 1,
+    "fine_rotations": 125,
+    "lower_bound_qc": 851060.25,
+    "sampled_inputs": 2509,
+    "shots_per_x": 64,
+    "sampled_failures": 0,
+    "sampled_worst_ratio": 0.32018793408411295
+  },
+  {
+    "segment_bits": 9,
+    "precision": 28,
+    "qubits": 164,
+    "instructions": 126735,
+    "toffoli_like": 5356,
+    "t_like": 1,
+    "fine_rotations": 119,
+    "lower_bound_qc": 878425,
+    "sampled_inputs": 2509,
+    "shots_per_x": 64,
+    "sampled_failures": 0,
+    "sampled_worst_ratio": 0.1463733235853632
+  }
+]
