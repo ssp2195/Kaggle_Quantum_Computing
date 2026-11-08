@@ -1,0 +1,65 @@
+[
+  {
+    "safe": 0.5,
+    "degree": 1,
+    "blocks": 14076,
+    "unfused_rotations": 230169,
+    "worst_ratio": 0.4999
+  },
+  {
+    "safe": 0.5,
+    "degree": 2,
+    "blocks": 1066,
+    "unfused_rotations": 264128,
+    "worst_ratio": 0.4993
+  },
+  {
+    "safe": 0.5,
+    "degree": 3,
+    "blocks": 286,
+    "unfused_rotations": 759597,
+    "worst_ratio": 0.4899
+  },
+  {
+    "safe": 0.75,
+    "degree": 1,
+    "blocks": 11773,
+    "unfused_rotations": 197476,
+    "worst_ratio": 0.7494
+  },
+  {
+    "safe": 0.75,
+    "degree": 2,
+    "blocks": 941,
+    "unfused_rotations": 239573,
+    "worst_ratio": 0.747
+  },
+  {
+    "safe": 0.75,
+    "degree": 3,
+    "blocks": 269,
+    "unfused_rotations": 729919,
+    "worst_ratio": 0.7276
+  },
+  {
+    "safe": 0.9,
+    "degree": 1,
+    "blocks": 10881,
+    "unfused_rotations": 184791,
+    "worst_ratio": 0.8999
+  },
+  {
+    "safe": 0.9,
+    "degree": 2,
+    "blocks": 897,
+    "unfused_rotations": 231272,
+    "worst_ratio": 0.8904
+  },
+  {
+    "safe": 0.9,
+    "degree": 3,
+    "blocks": 254,
+    "unfused_rotations": 700225,
+    "worst_ratio": 0.8915
+  }
+]
