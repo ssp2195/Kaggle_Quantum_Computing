@@ -28,12 +28,16 @@ def verify_kmb(path, *, max_x=MAX_X, shots_per_x=64, competition_contract=True):
         for shot in range(shots_per_x):
             sim.write_within_shot("x", shot, x)
         sim.do(circuit)
-        expected = 1/math.sqrt(x)
+        # Integer-sqrt reference: floor(2**65 / sqrt(x)) / 2**65.
+        expected = math.isqrt((1 << 130)//x) / float(1 << 65)
         tolerance = TOL*expected
+        # kickmix stores the (-1) sign separately from fine angle turns.
+        sign_mask = sim.read_phase_flipped_across_shots(out=int)
         for shot in range(shots_per_x):
             read_x = sim.read_within_shot("x", shot, out=int)
             clean = sim.read_within_shot(scratch, shot, out=int) == 0
-            phase = sim.read_shot_phase(shot)
+            phase = (float(sim.read_shot_phase(shot))
+                     + 0.5*((sign_mask >> shot) & 1)) % 1.0
             error = abs((phase-expected+0.5) % 1-0.5)
             worst = max(worst, error/tolerance)
             if read_x != x or not clean or error > tolerance:
