@@ -1,0 +1,16 @@
+name: numerical-prescreen
+on:
+  push:
+    branches: [benchmark1-direct-phase-experiments-20261108]
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy pytest
+      - run: python -m pytest -q tests/test_direct_phase.py
+      - run: python -m src.cli screen --degrees 1 2 3

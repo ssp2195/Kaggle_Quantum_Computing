@@ -1,0 +1,29 @@
+[
+  {
+    "degree": 1,
+    "blocks": 11773,
+    "max_x": 3133452,
+    "worst_x": 130048,
+    "max_tolerance_fraction": 0.7493901078694177,
+    "passes_numerical_tolerance": true,
+    "estimated_parity_rotations": 197476
+  },
+  {
+    "degree": 2,
+    "blocks": 941,
+    "max_x": 3133452,
+    "worst_x": 1856,
+    "max_tolerance_fraction": 0.7469759024213302,
+    "passes_numerical_tolerance": true,
+    "estimated_parity_rotations": 198287
+  },
+  {
+    "degree": 3,
+    "blocks": 269,
+    "max_x": 3133452,
+    "worst_x": 448,
+    "max_tolerance_fraction": 0.7276300251419691,
+    "passes_numerical_tolerance": true,
+    "estimated_parity_rotations": 358006
+  }
+]
