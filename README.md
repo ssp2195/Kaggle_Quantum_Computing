@@ -1,3 +1,34 @@
+
+## Current focus: normalized hybrid direct phase
+
+The original dyadic parity-gadget pilot is retained as a comparison. The
+stronger `src/hybrid_*.py` experiment implements a **full 22-bit** reversible
+kickmix circuit: normalize, lookup piecewise quadratic phase coefficients,
+apply constant/linear/quadratic phase terms, then restore every register.
+There is no Newton iteration or assembled numeric inverse-square-root output.
+
+Numerical/physical results: [hybrid_report.md](results/hybrid_report.md).
+The numerical sweep covers every one of the 3,133,452 integer inputs.
+Native kickmix tests construct full-width .kmb circuits and check randomized
+measurement trajectories. GitHub Actions additionally contains a three-way
+full-domain run of 200,540,928 trajectories per candidate.
+
+    python -m pip install numpy pytest
+    python -m pytest -q tests/test_hybrid_model.py
+    python -m src.hybrid_cli screen --output runs/hybrid_numerical.json
+
+Install the **native kickmix C++ extension** from the upstream Qualtran
+`kickmix/` project, then run:
+
+    python -m src.hybrid_cli build --segment-bits 8 --precision 26 --output out/hybrid_8_26.kmb
+    python -m src.hybrid_cli verify out/hybrid_8_26.kmb --random-count 2048
+    python -m src.hybrid_cli verify out/hybrid_8_26.kmb --full --output runs/hybrid_8_26_full.json
+
+Use `bash scripts/verify_official.sh out/hybrid_8_26.kmb official` with the
+Kaggle-provided verifier and dataset before submission. Our development
+verifier is **not** the official scorer, and its reported Toffoli count
+**excludes** analytic fine-rotation synthesis charges.
+
 # Kaggle Quantum Computing — Benchmark I direct-phase pilot
 
 Experimental branch for the Google Quantum AI Verifiable Quantum Circuit Compilation competition. The original main branch is unchanged.
