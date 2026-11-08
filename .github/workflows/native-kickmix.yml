@@ -1,0 +1,19 @@
+name: native-kickmix-smoke
+on:
+  workflow_dispatch:
+jobs:
+  native:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install --upgrade pip numpy pytest pybind11==2.12.0
+      - name: Install upstream native kickmix from Qualtran
+        run: |
+          git clone --depth 1 https://github.com/quantumlib/Qualtran.git /tmp/Qualtran
+          python -m pip install /tmp/Qualtran/kickmix
+      - run: python -m pytest -q tests/test_direct_phase.py tests/test_kickmix_optional.py
+      - run: python -m src.cli build --degree 2 --max-x 31 --input-bits 5 --output out/toy.kmb
+      - run: python -m src.cli verify out/toy.kmb --max-x 31 --shots-per-x 64 --development
