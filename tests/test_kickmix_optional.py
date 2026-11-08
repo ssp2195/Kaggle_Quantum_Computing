@@ -7,11 +7,11 @@ from src.verify import verify_kmb
 
 
 def test_build_serialize_simulate(tmp_path):
-    circuit = build_circuit(dyadic_partition(2, max_x=31), input_bits=5)
+    circuit = build_circuit(dyadic_partition(2, max_x=255), input_bits=8)
     path = tmp_path / "toy.kmb"
     circuit.to_file(path, format="kmb")
     assert km.Circuit.from_file(path, format="kmb") == circuit
-    result = verify_kmb(str(path), max_x=31, shots_per_x=64,
+    result = verify_kmb(str(path), max_x=255, shots_per_x=64,
                         competition_contract=False)
     assert result["failures"] == 0
     assert result["worst_error_ratio"] < 1
