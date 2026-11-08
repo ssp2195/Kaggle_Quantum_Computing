@@ -1,10 +1,5 @@
 name: hybrid-full-200m-trajectories
 on:
-  push:
-    branches: [benchmark1-direct-phase-experiments-20261108]
-    paths:
-      - '.github/workflows/hybrid-full.yml'
-      - 'src/hybrid_*.py'
   workflow_dispatch:
 jobs:
   full-verification:
