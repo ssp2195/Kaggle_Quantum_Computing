@@ -79,4 +79,5 @@ def verify_samples(circuit, xs, shots=64, print_progress=False):
                 verified_shots=len(xs) * shots, failures=failures,
                 worst_error_ratio=worst, first_bad_inputs=first_bad[:12],
                 qubits=circuit.num_qubits,
-                native_toffoli_like=stats.num_toffoli_like, fine_z_pow=stats.num_z_pow())
+                native_toffoli_like=stats.num_toffoli_like, fine_z_pow=stats.num_z_pow(min_clifford_hierarchy_level=4),
+                all_z_pow=stats.num_z_pow())
