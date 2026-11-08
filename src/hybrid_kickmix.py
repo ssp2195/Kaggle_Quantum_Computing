@@ -126,6 +126,7 @@ def resource_counts(circuit):
     stats = circuit.operation_statistics()
     return dict(qubits=circuit.num_qubits, instructions=stats.num_instructions,
                 toffoli_like=stats.num_toffoli_like, t_like=stats.num_t_like,
-                fine_rotations=stats.num_z_pow(),
+                fine_rotations=stats.num_z_pow(min_clifford_hierarchy_level=4),
+                all_z_pow=stats.num_z_pow(),
                 lower_bound_qc=circuit.num_qubits *
                 (stats.num_toffoli_like + stats.num_t_like / 4))
