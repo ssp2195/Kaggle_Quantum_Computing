@@ -56,3 +56,35 @@ Full-scale jobs are configured to test **3,133,452 x values × 64 shots = 200,54
     bash scripts/verify_official.sh out/hybrid_8_26.kmb official
 
 The simulation is not a substitute for the official metric notebook or Kaggle private-salt verification. The nominal numerical margin must cover circuit implementation and fine rotation synthesis; resource scoring must include all rotation costs. Prefer p=8/q=26 for the lowest native cost among these three, pending full authoritative verification.
+
+
+## Analytical error certificate independent of pointwise sampling
+
+The exact Taylor remainder of `f(z)=z^-1/2` after quadratic order satisfies
+
+    |R3| <= (5/16) * z0^-7/2 * h^3,    h=2^-p.
+
+Dividing by `f(z)`, using `z0>=1` and `z<=z0+h`, gives the
+**relative** error bound
+
+    |R3|/f(z) <= (5/16) h^3 sqrt(1+h).
+
+Quantizing each of the three Taylor coefficients to nearest multiples of
+`2^-q` changes their summed value by at most `(3/2)2^-q` because `0<=u<1`.
+Also `f(z)>=1/2`. Hence, normalized by the allowed relative tolerance
+`2^-24`, a *uniform bound over the continuum of normalized inputs* is
+
+    error/tolerance <= (5/16) * 2^(24-3p) * sqrt(1+2^-p)
+                       + 3 * 2^(24-q).
+
+For p=8, q=28 this is approximately 0.501 and therefore is strictly
+below 1. The bound also holds for p=9, q=26 and p=9, q=28. For p=8,
+q=26 it is conservative (above 1); the exhaustive finite-domain screen
+instead shows an observed maximum ratio 0.618 on every admissible integer.
+
+The certificate is for exact arithmetic on the quantized coefficients.
+The actual kickmix circuit is designed to realize those exact integers
+with reversible adders, carry-safe multiplication and exact fractional
+Z_POW exponents. An official verifier run is still required to establish
+that the generated .kmb meets the competition's complete implementation
+and resource-accounting rules.
