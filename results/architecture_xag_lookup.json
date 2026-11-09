@@ -1,0 +1,18 @@
+{
+  "variant": "exact-ANF-depth-first-shared-prefix-AND-lookup-p6",
+  "inputs_to_lookup": 256,
+  "coefficient_table": "chebyshev-tuned quadratic 6/25 packed coefficient words",
+  "source": "https://github.com/ssp2195/Kaggle_Quantum_Computing/actions/runs/42650595974",
+  "status": "native_lookup_roundtrip_passed_12_selected_addresses_x_64_shots_each",
+  "generic_kickmix_qrom": {
+    "qubits": 71,
+    "toffoli_like": 279
+  },
+  "own_anf_xag": {
+    "qubits": 70,
+    "toffoli_like": 494
+  },
+  "conclusion": "Our reproducible XOR-AND monomial graph is correct but inferior in Toffoli count; not suitable to replace built-in lookup.",
+  "official_benchmark1_score": null,
+  "full_domain_22bit_phase_verification": false
+}

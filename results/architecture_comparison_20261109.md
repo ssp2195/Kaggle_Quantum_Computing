@@ -158,3 +158,31 @@ Current verified own best 465259.66: requires a further
 meets or approaches 69229. The user's last actual combined
 Kaggle leaderboard score was 1.33 from the previous submission;
 this experiment has not submitted new circuits to Kaggle.
+
+## Native XOR/AND lookup primitive
+
+The independent `src/benchmark1_xag_lookup.py` calculates an exact
+Boolean ANF for the 256-row coefficient table and emits a depth-first
+prefix-shared AND network with kickmix measurement-conditioned `del_and`
+cleanup. The circuit is **coherent**; applying the same table twice
+returns the coefficient register to zero.
+
+[Native kickmix test run](https://github.com/ssp2195/Kaggle_Quantum_Computing/actions/runs/42650595974):
+**PASS**, 3 tests; checked 12 representative 8-bit addresses × 64
+trajectories using each circuit.
+
+| Complete 8-bit coefficient lookup + erase | Q | Toffoli-like |
+|---|---:|---:|
+| Native kickmix built-in QROM | 71 | **279** |
+| Our direct ANF-XAG | 70 | 494 |
+
+The extra 215 Toffoli-like gates for one saved qubit make the plain
+ANF implementation uncompetitive. This is **not** the optimized XAG
+with ~172 AND gates independently reported by competitors. Their
+method relies on multi-output Boolean optimization and different
+measurement-cleanup scheduling, not simply a monomial traversal.
+
+A stronger native XOR/AND graph optimizer would need exact
+multi-output synthesis and lifetime scheduling. The table comparison
+is an isolated primitive, not a full 22-bit inverse-square-root
+circuit and not a Kaggle competition score.
