@@ -1,0 +1,48 @@
+name: benchmark-1-inplace-Horner-and-MBUC
+on:
+  push:
+    branches: [benchmark-1]
+    paths:
+      - 'src/benchmark1_horner.py'
+      - 'src/benchmark1_horner_cli.py'
+      - 'tests/test_benchmark1_horner.py'
+      - '.github/workflows/benchmark1-horner.yml'
+  workflow_dispatch:
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    strategy:
+      fail-fast: false
+      matrix:
+        guard: [3, 4]
+        cleanup: [mbuc, coherent]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy scipy pytest pybind11==2.12.0
+      - run: |
+          git clone --depth 1 https://github.com/quantumlib/Qualtran.git /tmp/Qualtran
+          python -m pip install /tmp/Qualtran/kickmix
+      - name: Complete 3133452-input fixed-point Horner screen
+        run: python -m src.benchmark1_horner_cli screen --guard ${{ matrix.guard }} --cleanup ${{ matrix.cleanup }}
+      - name: Generate 22-bit native kickmix KMB circuit
+        run: |
+          mkdir -p out runs
+          python -m src.benchmark1_horner_cli build --guard ${{ matrix.guard }} --cleanup ${{ matrix.cleanup }} \
+             --output out/horner_${{ matrix.guard }}_${{ matrix.cleanup }}.kmb \
+             | tee runs/resources.json
+      - name: Coherent 64-shot representative input verification
+        run: |
+          python -m src.benchmark1_horner_cli verify --guard ${{ matrix.guard }} --cleanup ${{ matrix.cleanup }} \
+            --circuit out/horner_${{ matrix.guard }}_${{ matrix.cleanup }}.kmb \
+            --random-count 8192 --output runs/sample.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: horner-g${{ matrix.guard }}-${{ matrix.cleanup }}
+          path: |
+            out/*.kmb
+            runs/*.json
