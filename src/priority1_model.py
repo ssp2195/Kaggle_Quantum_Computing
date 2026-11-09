@@ -19,10 +19,12 @@ class Approximation:
     precision: int = 26
 
     def __post_init__(self):
-        if self.family not in ("taylor", "chebyshev", "minimax"):
-            raise ValueError("family must be taylor, chebyshev, or minimax")
+        if self.family not in ("taylor", "chebyshev", "minimax", "chebyshev-tuned"):
+            raise ValueError("family must be taylor, chebyshev, minimax, or chebyshev-tuned")
         if self.degree not in (2, 3) or self.segment_bits not in range(4, 11):
             raise ValueError("degree 2 or 3, segment_bits 4..10 required")
+        if self.family == "chebyshev-tuned" and (self.degree,self.segment_bits,self.precision) != (2,6,25):
+            raise ValueError("The quantization-aware adjustment is certified only for 2/6/25")
         if not 24 <= self.precision <= 34:
             raise ValueError("precision 24..34 required")
 
@@ -32,6 +34,8 @@ class Approximation:
 
 
 def _coefficients(family: str, degree: int, z0: float, h: float):
+    if family == "chebyshev-tuned":
+        family = "chebyshev"
     if family == "taylor":
         # binomial series of (1 + h*u/z0)^(-1/2).
         a = [1.0]
@@ -81,6 +85,18 @@ def coefficient_matrix(config: Approximation) -> np.ndarray:
                 raise ArithmeticError(
                     f"Unexpected sign at interval {j} coefficient {i}: {a}")
             mat[j,i] = int(((-1)**i)*a)
+    if config.family == "chebyshev-tuned":
+        # Integer coefficient adjustments found by deterministic coordinate
+        # search on all 2**14 normalized offsets, then exhaustively checked
+        # on all 3,133,452 benchmark inputs. Entries are (interval, power):
+        # signed correction to the nonnegative coefficient magnitude.
+        improvements = {
+            (78,1): +1, (172,1): +1, (203,0): +1,
+            (224,1): -1, (231,1): -1, (246,1): +1,
+            (255,1): -1,
+        }
+        for (interval,power),delta in improvements.items():
+            mat[interval,power] += delta
     mat.setflags(write=False)
     return mat
 
