@@ -1,0 +1,40 @@
+name: benchmark-1-aggressive-truncation
+on:
+  push:
+    branches: [benchmark-1]
+    paths: ['.github/workflows/benchmark1-aggressive.yml']
+  workflow_dispatch:
+jobs:
+  candidates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        budget: ["0.08", "0.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy scipy pytest pybind11==2.12.0
+      - run: |
+          git clone --depth 1 https://github.com/quantumlib/Qualtran.git /tmp/Qualtran
+          python -m pip install /tmp/Qualtran/kickmix
+      - name: Build resource-counted full-width candidate
+        shell: bash
+        run: |
+          mkdir -p out runs
+          python -m src.priority1_cli build --truncated --family chebyshev \
+            --degree 2 --segment-bits 7 --precision 26 --truncation-budget ${{ matrix.budget }} \
+            --output out/cheb7_budget_${{ matrix.budget }}.kmb | tee runs/resources.json
+          python -m src.priority1_cli verify \
+            --circuit out/cheb7_budget_${{ matrix.budget }}.kmb \
+            --random-count 8192 --output runs/samples.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: aggressive-cheb7-budget-${{ matrix.budget }}
+          path: |
+            out/
+            runs/
