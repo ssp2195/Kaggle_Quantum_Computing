@@ -22,6 +22,7 @@ def main():
     p.add_argument("--circuit",type=Path)
     p.add_argument("--full",action="store_true")
     p.add_argument("--truncated",action="store_true")
+    p.add_argument("--normalization",choices=["serial","barrel"],default="serial")
     p.add_argument("--streamed",action="store_true",
                    help="load and erase each polynomial coefficient independently")
     p.add_argument("--drops",type=str,
@@ -43,7 +44,7 @@ def main():
             if a.streamed:
                 if drops is None:
                     p.error("--streamed requires --drops")
-                circuit=build_streamed(cfg,drops)
+                circuit=build_streamed(cfg,drops,normalization=a.normalization)
             elif a.truncated:
                 circuit=build_truncated(cfg,tolerance_fraction=a.truncation_budget,
                                         explicit_drops=drops)
@@ -55,6 +56,7 @@ def main():
                         architecture=("streamed" if a.streamed else
                                       "truncated" if a.truncated else "full_product"))
             if a.truncated or a.streamed:
+                result["normalization"]=a.normalization
                 result["truncation_plan"]=(full_cut_screen(cfg,drops) if drops is not None
                                             else plan(cfg,a.truncation_budget))
         else:
