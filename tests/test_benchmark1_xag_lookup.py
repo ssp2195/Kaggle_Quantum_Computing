@@ -36,7 +36,7 @@ def test_kickmix_anf_reversible_roundtrip():
         assert set(c.register_data) == {"address", "output"}
         sim = km.Simulator(batch_size=64)
         sim.use_same_registers_as(c)
-        for x in (0, 1, 2, 3, 15, 31, 63, 64, 127, 128, 192, 255):
+        for x in range(256):
             sim.clear_for_shot()
             for shot in range(64):
                 sim.write_within_shot("address", shot, x)
@@ -47,6 +47,8 @@ def test_kickmix_anf_reversible_roundtrip():
                 assert abs(float(sim.read_shot_phase(shot))) < 1e-10
     base = generic.operation_statistics()
     candidate = xag.operation_statistics()
+    # 256 complete addresses x 64 measurement trajectories per circuit.
+    # Both circuits are correct, though the unoptimized ANF-XAG costs more.
     print("NATIVE_QROM_COMPARISON",
           dict(reference_qubits=generic.num_qubits,
                reference_toffolis=base.num_toffoli_like,
