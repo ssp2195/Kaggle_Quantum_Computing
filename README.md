@@ -1,3 +1,32 @@
+# Benchmark I — validated architecture and ongoing research
+
+**Active branch:** `benchmark-1`.
+
+**Best independently verified circuit:** grouped Chebyshev quadratic 7/26
+with barrel normalization, 122 qubits, 3,190 Toffoli-like operations,
+88 fine rotations, verified **Q × C = 465,259.6560053503**.
+This passed 200,540,928 trajectories under the pinned competition
+verifier mirror. It is not a new Kaggle leaderboard submission.
+
+**30× target:** Q × C ≤ 69,229 relative to Google's reference. **Not achieved.**
+
+Rebuild using installed native C++ kickmix:
+
+```bash
+python -m src.benchmark1_best --output out/best_invsqrt.kmb
+```
+
+For the latest architecture comparisons, negative results, stage costs
+and independent public-source provenance, see
+[Architecture comparison](results/architecture_comparison_20261109.md).
+
+The recent piecewise-linear and symmetric-squaring prototypes
+do **not** improve the verified best and must not be submitted.
+The new shared-monomial XOR/AND-graph lookup is an isolated research
+primitive, not a complete Benchmark I circuit.
+
+---
+
 # Benchmark I — Priority 1 optimization experiments
 
 **Active research branch:** `benchmark-1`. For current results, algorithms,
