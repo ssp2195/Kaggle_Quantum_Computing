@@ -46,7 +46,7 @@ jobs:
       - name: Full independent 200540928-trajectory verification and resource score
         run: |
           OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 \
-          python -I mirror/verify_submission_invsqrt.py out/cheb7_grouped_barrel_a_bc.kmb \
+          python -I mirror/verify_submission_invsqrt.py out/cheb7_compact_MBUC_a_bc.kmb \
              --n-p 10 --beta 1 --precision-bits 24 --eta 218 \
              --max-x 3133452 --shots-per-x 64 --batch-size 256 \
              --max-workers 4 --salt quantum-circuit-local-v1 \
