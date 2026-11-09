@@ -20,6 +20,8 @@ def main():
     p.add_argument("--circuit",type=Path)
     p.add_argument("--full",action="store_true")
     p.add_argument("--truncated",action="store_true")
+    p.add_argument("--truncation-budget",type=float,default=.025,
+                   help="maximum relative phase-error allowance per discarded product")
     p.add_argument("--random-count",type=int,default=2048)
     a=p.parse_args()
     if a.command=="screen":
@@ -31,13 +33,13 @@ def main():
             if a.output is None:
                 p.error("--output required")
             cfg=Approximation(a.family,a.degree,a.segment_bits,a.precision)
-            circuit=build_truncated(cfg) if a.truncated else build_priority1(cfg)
+            circuit=build_truncated(cfg,tolerance_fraction=a.truncation_budget) if a.truncated else build_priority1(cfg)
             a.output.parent.mkdir(parents=True,exist_ok=True)
             circuit.to_file(a.output,format="kmb")
             result=dict(**resource_counts(circuit),file=str(a.output),
                         architecture="truncated" if a.truncated else "full_product")
             if a.truncated:
-                result["truncation_plan"]=plan(cfg)
+                result["truncation_plan"]=plan(cfg,a.truncation_budget)
         else:
             if a.circuit is None:
                 p.error("--circuit required")
