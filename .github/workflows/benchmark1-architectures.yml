@@ -1,12 +1,5 @@
 name: benchmark-1-architecture-comparison
 on:
-  push:
-    branches: [benchmark-1]
-    paths:
-      - 'src/benchmark1_*.py'
-      - 'src/priority1_grouped.py'
-      - 'tests/test_benchmark1_arch_*.py'
-      - '.github/workflows/benchmark1-architectures.yml'
   workflow_dispatch:
 jobs:
   architecture:
