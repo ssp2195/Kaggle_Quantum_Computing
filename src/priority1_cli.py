@@ -7,6 +7,7 @@ from .priority1_kickmix import build_priority1
 from .priority1_truncated import build_truncated, plan
 from .priority1_exact import full_cut_screen
 from .priority1_streamed import build_streamed
+from .priority1_grouped import build_grouped
 from .hybrid_kickmix import resource_counts
 from .hybrid_verify import verify_samples, boundary_inputs
 
@@ -23,6 +24,8 @@ def main():
     p.add_argument("--full",action="store_true")
     p.add_argument("--truncated",action="store_true")
     p.add_argument("--normalization",choices=["serial","barrel"],default="serial")
+    p.add_argument("--grouping",choices=["ab_c","a_bc"],
+                   help="two-stage coefficient lookup grouping")
     p.add_argument("--streamed",action="store_true",
                    help="load and erase each polynomial coefficient independently")
     p.add_argument("--drops",type=str,
@@ -41,7 +44,12 @@ def main():
                 p.error("--output required")
             cfg=Approximation(a.family,a.degree,a.segment_bits,a.precision)
             drops=tuple(map(int,a.drops.split(","))) if a.drops else None
-            if a.streamed:
+            if a.grouping:
+                if drops is None:
+                    p.error("--grouping requires --drops")
+                circuit=build_grouped(cfg,drops,grouping=a.grouping,
+                                      normalization=a.normalization)
+            elif a.streamed:
                 if drops is None:
                     p.error("--streamed requires --drops")
                 circuit=build_streamed(cfg,drops,normalization=a.normalization)
@@ -53,9 +61,10 @@ def main():
             a.output.parent.mkdir(parents=True,exist_ok=True)
             circuit.to_file(a.output,format="kmb")
             result=dict(**resource_counts(circuit),file=str(a.output),
-                        architecture=("streamed" if a.streamed else
+                        architecture=("grouped_"+a.grouping if a.grouping else
+                                      "streamed" if a.streamed else
                                       "truncated" if a.truncated else "full_product"))
-            if a.truncated or a.streamed:
+            if a.truncated or a.streamed or a.grouping:
                 result["normalization"]=a.normalization
                 result["truncation_plan"]=(full_cut_screen(cfg,drops) if drops is not None
                                             else plan(cfg,a.truncation_budget))
