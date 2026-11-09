@@ -163,3 +163,32 @@ and may depend on frozen synthesis data. No external circuit binaries
 were imported.
 
 **No native candidate built in this phase has met the 30x target.**
+
+## F. Further native compact-Horner and causal measurement results
+
+The compact normalizer also integrates with in-place Horner:
+
+| Guard bits | Peak qubits | Toffoli-like | Fine rotations | Status |
+|---|---:|---:|---:|---|
+| 3 | 139 | 3379 | 36 | Native sampled PASS |
+| 4 | 143 | 3479 | 37 | Native sampled PASS |
+
+Evidence: https://github.com/ssp2195/Kaggle_Quantum_Computing/actions/runs/42655937489
+
+Both are lower-workspace than the earlier Horner variants, but their
+native Toffoli cost floors of 469681 and 497497, respectively, already
+exceed our prior 465260 full cost when rotations are assumed free.
+Therefore neither warrants a new full verifier run.
+
+The independent native staged cubic-AND toy passed every 3-bit input
+under 64 trajectories, preserving phase and cleaning scratch. At
+**five qubits** it costs **2 Toffoli-like gates with MBUC**, compared
+with **4 with coherent CCX erasure**; all forward CCX gates remain.
+
+Evidence: https://github.com/ssp2195/Kaggle_Quantum_Computing/actions/runs/42656187092
+
+**Consequence:** measurement erasure can halve the gate count of an AND
+compute/erase pair and can release high-degree temporary computations
+when intermediate factors remain live, but it cannot by itself make
+reversible Horner arithmetic or QROM free. The compact-normalization
+schedule is the strongest new measured application to this task.
