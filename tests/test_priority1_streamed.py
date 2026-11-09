@@ -5,9 +5,10 @@ from src.priority1_streamed import build_streamed
 from src.hybrid_verify import boundary_inputs,verify_samples
 
 @pytest.mark.parametrize("drops",[(10,12,11),(10,11,12)])
-def test_coefficient_streaming(drops,tmp_path):
+@pytest.mark.parametrize("normalization",["serial","barrel"])
+def test_coefficient_streaming(drops,normalization,tmp_path):
     cfg=Approximation("chebyshev",2,7,26)
-    circuit=build_streamed(cfg,drops)
+    circuit=build_streamed(cfg,drops,normalization=normalization)
     assert list(circuit.register_data)==["x"]
     assert len(circuit.register_data["x"])==22
     path=tmp_path/"streamed.kmb"
