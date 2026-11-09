@@ -114,7 +114,10 @@ def build(cfg: LinearConfig, grouping="joint"):
         return buf, table, values
 
     def release(buf, table):
-        builder.del_lookup(table=table, address=x[lo:], target=buf)
+        # Reapply XOR QROM to erase coefficients coherently.
+        # Measurement-based del_lookup needs additional unary-cleanup workspace
+        # for the large 12-bit address space (often unavailable at peak Q).
+        builder.init_lookup(table=table, address=x[lo:], target=buf)
         builder.free(buf)
 
     def linear_phase(b):
