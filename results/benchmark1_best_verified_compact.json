@@ -1,0 +1,23 @@
+{
+  "architecture": "grouped-chebyshev-quadratic-p7-q26-compact-mbuc-normalization-a-bc-cuts-10-12-11",
+  "source_type": "pinned public mirror of competition verifier, not actual Kaggle leaderboard",
+  "verifier_status": "PASS",
+  "benchmark_1_q_times_c": 430259.61862786254,
+  "toffoli_equivalent": 3841.603737748773,
+  "native_toffoli_like": 3218,
+  "t_like": 1,
+  "fine_rotations": 88,
+  "rotation_eps": 4.148117181923156e-13,
+  "qubits": 112,
+  "reaction_depth": 393,
+  "num_ops": 48355,
+  "verified_shots": 200540928,
+  "worst_error_over_tolerance": 0.717347376787342,
+  "worst_x": 235999,
+  "circuit_sha256": "938d053f2218caa1859837ffb466ded01033c2d8d6445699276e5b4e21ebbc42",
+  "verification_run": "https://github.com/ssp2195/Kaggle_Quantum_Computing/actions/runs/42657329801",
+  "previous_verified_benchmark_1_q_times_c": 465259.6560053503,
+  "google_reference_approx": 2076880,
+  "target_benchmark_1_q_times_c": 69229.33333333333,
+  "kaggle_leaderboard_score": null
+}

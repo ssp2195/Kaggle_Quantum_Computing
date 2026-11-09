@@ -1,5 +1,32 @@
 # Benchmark I architectural experiments — 2026-11-09
 
+## Updated best fully verified result
+
+**Selection: compact measurement-corrected normalization with the
+existing grouped Chebyshev quadratic A/BC phase core.**
+
+- Native kickmix circuit: **112 qubits**, **3,218 Toffoli-like**, **88 fine Z_POW rotations**.
+- Full verifier: **PASS**, all **3,133,452 × 64 = 200,540,928** trajectories.
+- Mean Toffoli-equivalent resource cost: **3,841.603737748773**.
+- Benchmark I cost `Q*C`: **430,259.61862786254**.
+- Relative to Google's reference ~2,076,880: **4.827×** improvement.
+- Former verified best: barrel normalization, 122 qubits,
+  `Q*C = 465,259.6560053503`.
+- Serialized circuit SHA-256:
+  `938d053f2218caa1859837ffb466ded01033c2d8d6445699276e5b4e21ebbc42`.
+- [Completed pinned full verifier run and artifact](https://github.com/ssp2195/Kaggle_Quantum_Computing/actions/runs/42657329801).
+- Rebuild: `python -m src.benchmark1_best --output out/best_invsqrt.kmb`.
+
+The 30× objective still requires `Q*C ≤ 69,229.33`,
+**6.215× below the new best**. No new Kaggle leaderboard submission
+was made. The older sections below document the earlier baseline and
+negative architecture experiments; their original 'best' status is
+historical and has been superseded.
+
+---
+
+# Benchmark I architectural experiments — 2026-11-09
+
 ## Decision
 
 **Retain the grouped Chebyshev quadratic phase circuit with barrel normalization.**

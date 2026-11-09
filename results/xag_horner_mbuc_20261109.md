@@ -1,3 +1,23 @@
+# Verified outcome update — compact MBUC wins
+
+**Full independent pinned verifier PASS**, verified on 2026-11-09:
+`Q=112`, `Toffoli=3218`, `88` fine rotations,
+`C=3841.603737748773`,
+`Q*C=430259.61862786254`, `200540928` trajectories,
+worst error / allowed tolerance `0.717347376787342` at `x=235999`.
+
+[Verifier PASS and certified KMB](https://github.com/ssp2195/Kaggle_Quantum_Computing/actions/runs/42657329801).
+
+This replaces the previous verified best
+`Q*C=465259.6560053503`; the remainder of the report below records
+experimental phases prior to this verified update. One earlier workflow
+failed solely because its verifier command referenced the old filename;
+the corrected run linked above is the authoritative result.
+Full verification of the complete circuit is distinct from the
+small-scale AND-cleanup demonstration.
+
+---
+
 # XAG / in-place Horner and measurement-based cleanup — 2026-11-09
 
 ## Scope and evidence labels

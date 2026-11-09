@@ -1,29 +1,36 @@
-# Benchmark I — validated architecture and ongoing research
+# Benchmark I — best fully verified kickmix implementation
 
 **Active branch:** `benchmark-1`.
 
-**Best independently verified circuit:** grouped Chebyshev quadratic 7/26
-with barrel normalization, 122 qubits, 3,190 Toffoli-like operations,
-88 fine rotations, verified **Q × C = 465,259.6560053503**.
-This passed 200,540,928 trajectories under the pinned competition
-verifier mirror. It is not a new Kaggle leaderboard submission.
+**Best fully verified circuit:** grouped Chebyshev quadratic 7/26,
+cut settings `(10,12,11)`, coefficient grouping **A then BC**,
+with **compact measurement-corrected barrel normalization**.
+Uses **112 qubits**, **3,218 Toffoli-like operations**, and
+**88 fine rotations**. Full pinned competition-verifier mirror:
+**PASS** on **200,540,928 trajectories**, `Q*C = 430,259.61862786254`
+(~**4.83×** improvement versus Google's ~2,076,880 reference).
 
-**30× target:** Q × C ≤ 69,229 relative to Google's reference. **Not achieved.**
+**30× target:** `Q*C ≤ 69,229.33` — **not achieved**.
+The best verified implementation still needs a further **6.21×**
+reduction in cost.
 
-Rebuild using installed native C++ kickmix:
+Rebuild the exact, SHA-256-checked candidate using pinned native kickmix:
 
 ```bash
 python -m src.benchmark1_best --output out/best_invsqrt.kmb
 ```
 
-For the latest architecture comparisons, negative results, stage costs
-and independent public-source provenance, see
-[Architecture comparison](results/architecture_comparison_20261109.md).
+The builder explicitly checks native qubit and gate counts **and** the
+serialized circuit's SHA-256. If the hash changes under a different kickmix
+release, the rebuilt binary must be reverified before being submitted.
 
-The recent piecewise-linear and symmetric-squaring prototypes
-do **not** improve the verified best and must not be submitted.
-The new shared-monomial XOR/AND-graph lookup is an isolated research
-primitive, not a complete Benchmark I circuit.
+Evidence: [full verification PASS](https://github.com/ssp2195/Kaggle_Quantum_Computing/actions/runs/42657329801).
+See [XAG / Horner / measurement cleanup research](results/xag_horner_mbuc_20261109.md)
+and [architecture comparison](results/architecture_comparison_20261109.md).
+
+The real Kaggle leaderboard still needs an actual new submission.
+Do **not** submit exploratory XAG, Horner, or linear candidates; their
+current end-to-end native resource costs are higher or incorrect.
 
 ---
 
