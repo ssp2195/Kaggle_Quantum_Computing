@@ -1,0 +1,30 @@
+[
+  {
+    "terms": 1000,
+    "domain_points": 1048576,
+    "worst_error_ratio": 16.763344632461667,
+    "failed_points": 591336,
+    "passes_numerical": false
+  },
+  {
+    "terms": 1500,
+    "domain_points": 1048576,
+    "worst_error_ratio": 2.3572158496826887,
+    "failed_points": 17191,
+    "passes_numerical": false
+  },
+  {
+    "terms": 2000,
+    "domain_points": 1048576,
+    "worst_error_ratio": 0.874837089329958,
+    "failed_points": 0,
+    "passes_numerical": true
+  },
+  {
+    "terms": 3000,
+    "domain_points": 1048576,
+    "worst_error_ratio": 0.21850662678480148,
+    "failed_points": 0,
+    "passes_numerical": true
+  }
+]
