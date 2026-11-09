@@ -1,0 +1,47 @@
+name: benchmark-1-8bit-XAG-Horner
+on:
+  push:
+    branches: [benchmark-1]
+    paths:
+      - 'src/benchmark1_horner_xag.py'
+      - 'src/benchmark1_horner_xag_cli.py'
+      - 'src/benchmark1_horner.py'
+      - 'tests/test_benchmark1_horner_xag.py'
+      - '.github/workflows/benchmark1-horner-xag.yml'
+  workflow_dispatch:
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    strategy:
+      fail-fast: false
+      matrix:
+        lookup: [xag, qrom]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy scipy pytest pybind11==2.12.0
+      - run: |
+          git clone --depth 1 https://github.com/quantumlib/Qualtran.git /tmp/Qualtran
+          python -m pip install /tmp/Qualtran/kickmix
+      - name: Exact 3133452-input fixed-point quadratic Horner screen
+        run: python -m src.benchmark1_horner_xag_cli screen --lookup ${{ matrix.lookup }}
+      - name: Native complete 22-bit XAG/Horner circuit
+        run: |
+          mkdir -p out runs
+          python -m src.benchmark1_horner_xag_cli build --lookup ${{ matrix.lookup }} \
+            --output out/horner_${{ matrix.lookup }}.kmb | tee runs/resources.json
+      - name: Native coherent phase verification 8192+ boundary inputs 64 shots
+        run: |
+          python -m src.benchmark1_horner_xag_cli verify --lookup ${{ matrix.lookup }} \
+            --circuit out/horner_${{ matrix.lookup }}.kmb \
+            --random-count 8192 --output runs/sample.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: xag-horner-${{ matrix.lookup }}
+          path: |
+            out/*.kmb
+            runs/*.json
