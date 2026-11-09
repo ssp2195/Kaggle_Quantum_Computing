@@ -19,6 +19,7 @@ import numpy as np
 from .priority1_model import Approximation, coefficient_matrix
 from .priority1_exact import truncated_product
 from .priority1_normalize import normalize_barrel, denormalize_barrel
+from .benchmark1_compact_normalize import normalize_compact, denormalize_compact
 from .hybrid_model import MAX_X, TOL, NORMAL_BITS
 from .hybrid_kickmix import _phase
 
@@ -34,8 +35,8 @@ class HornerConfig:
             raise ValueError("guard bits must be between 2 and 6")
         if self.cleanup not in ("mbuc", "coherent"):
             raise ValueError("cleanup must be mbuc or coherent")
-        if self.normalization not in ("barrel", "serial"):
-            raise ValueError("normalization must be barrel or serial")
+        if self.normalization not in ("barrel", "serial", "compact"):
+            raise ValueError("normalization must be barrel, serial or compact")
 
 
 COEFF_CONFIG = Approximation("chebyshev", 2, 7, 26)
@@ -166,7 +167,8 @@ def build(config: HornerConfig):
     b=km.CircuitBuilder()
     x=b.create_quantum_register(NORMAL_BITS,name="x")
     norm,undo=((normalize_barrel,denormalize_barrel)
-               if config.normalization=="barrel" else (_normalize,_denormalize))
+               if config.normalization=="barrel" else (normalize_compact,denormalize_compact)
+               if config.normalization=="compact" else (_normalize,_denormalize))
     with b.mark("normalize"):
         flags,shift=norm(b,x)
     coeff=b.alloc_qubits(sum(widths))

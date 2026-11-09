@@ -12,7 +12,7 @@ def main():
     p.add_argument("command",choices=["screen","build","verify"])
     p.add_argument("--guard",type=int,default=4)
     p.add_argument("--cleanup",choices=["mbuc","coherent"],default="mbuc")
-    p.add_argument("--normalization",choices=["barrel","serial"],default="barrel")
+    p.add_argument("--normalization",choices=["barrel","serial","compact"],default="barrel")
     p.add_argument("--output",type=Path)
     p.add_argument("--circuit",type=Path)
     p.add_argument("--random-count",type=int,default=4096)
