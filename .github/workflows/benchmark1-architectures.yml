@@ -1,0 +1,49 @@
+name: benchmark-1-architecture-comparison
+on:
+  push:
+    branches: [benchmark-1]
+    paths:
+      - 'src/benchmark1_*.py'
+      - 'src/priority1_grouped.py'
+      - 'tests/test_benchmark1_arch_*.py'
+      - '.github/workflows/benchmark1-architectures.yml'
+  workflow_dispatch:
+jobs:
+  architecture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        architecture: ['linear-joint','linear-streamed','square-rows','square-symmetric']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy scipy pytest pybind11==2.12.0
+      - name: Build native kickmix C++20 extension
+        run: |
+          git clone --depth 1 https://github.com/quantumlib/Qualtran.git /tmp/Qualtran
+          python -m pip install /tmp/Qualtran/kickmix
+      - name: Exhaustive mathematical and square-algebra tests
+        run: python -m pytest -q tests/test_benchmark1_arch_math.py
+      - name: Compile 22-bit circuit, record native resources
+        shell: bash
+        run: |
+          mkdir -p out runs
+          python -m src.benchmark1_arch_cli build --architecture "${{ matrix.architecture }}" \
+            --output "out/${{ matrix.architecture }}.kmb" | tee "runs/${{ matrix.architecture }}-cost.json"
+      - name: Coherent 64-shot per input sample and zero-scratch checks
+        shell: bash
+        run: |
+          python -m src.benchmark1_arch_cli verify \
+            --circuit "out/${{ matrix.architecture }}.kmb" --random-count 4096 \
+            --output "runs/${{ matrix.architecture }}-verify.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: architecture-${{ matrix.architecture }}
+          path: |
+            out/*.kmb
+            runs/*.json
