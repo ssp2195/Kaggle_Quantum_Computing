@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 from .priority1_model import Approximation, full_domain_screen
 from .priority1_kickmix import build_priority1
+from .priority1_truncated import build_truncated, plan
 from .hybrid_kickmix import resource_counts
 from .hybrid_verify import verify_samples, boundary_inputs
 
@@ -18,6 +19,7 @@ def main():
     p.add_argument("--output",type=Path)
     p.add_argument("--circuit",type=Path)
     p.add_argument("--full",action="store_true")
+    p.add_argument("--truncated",action="store_true")
     p.add_argument("--random-count",type=int,default=2048)
     a=p.parse_args()
     if a.command=="screen":
@@ -28,11 +30,14 @@ def main():
         if a.command=="build":
             if a.output is None:
                 p.error("--output required")
-            circuit=build_priority1(
-                Approximation(a.family,a.degree,a.segment_bits,a.precision))
+            cfg=Approximation(a.family,a.degree,a.segment_bits,a.precision)
+            circuit=build_truncated(cfg) if a.truncated else build_priority1(cfg)
             a.output.parent.mkdir(parents=True,exist_ok=True)
             circuit.to_file(a.output,format="kmb")
-            result=dict(**resource_counts(circuit),file=str(a.output))
+            result=dict(**resource_counts(circuit),file=str(a.output),
+                        architecture="truncated" if a.truncated else "full_product")
+            if a.truncated:
+                result["truncation_plan"]=plan(cfg)
         else:
             if a.circuit is None:
                 p.error("--circuit required")
