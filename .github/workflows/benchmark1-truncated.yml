@@ -1,0 +1,55 @@
+name: benchmark-1-truncated-phase-experiments
+on:
+  push:
+    branches: [benchmark-1]
+    paths:
+      - 'src/priority1_truncated.py'
+      - 'tests/test_priority1_truncated*.py'
+      - '.github/workflows/benchmark1-truncated.yml'
+  workflow_dispatch:
+jobs:
+  truncated:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {family: chebyshev, segment: 6, precision: 26}
+          - {family: chebyshev-tuned, segment: 6, precision: 25}
+          - {family: chebyshev, segment: 7, precision: 26}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy scipy pytest pybind11==2.12.0
+      - name: Compile native kickmix extension
+        run: |
+          git clone --depth 1 https://github.com/quantumlib/Qualtran.git /tmp/Qualtran
+          python -m pip install /tmp/Qualtran/kickmix
+      - name: Check conservative truncation error certificates
+        run: python -m pytest -q tests/test_priority1_truncated.py
+      - name: Check actual native 22-bit truncated circuit
+        run: python -m pytest -q tests/test_priority1_truncated_kickmix.py
+      - name: Build, measure and verify sampled phase trajectories
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p out runs
+          family="${{ matrix.family }}"
+          p="${{ matrix.segment }}"
+          q="${{ matrix.precision }}"
+          name="${family}_${p}_${q}_truncated"
+          python -m src.priority1_cli build --truncated --family "$family" --degree 2 \
+            --segment-bits "$p" --precision "$q" --output "out/$name.kmb" |
+            tee "runs/$name-resources.json"
+          python -m src.priority1_cli verify --circuit "out/$name.kmb" \
+            --random-count 4096 --output "runs/$name-samples.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: truncated-${{ matrix.family }}-${{ matrix.segment }}-${{ matrix.precision }}
+          path: |
+            runs/
+            out/*.kmb
