@@ -192,3 +192,30 @@ compute/erase pair and can release high-degree temporary computations
 when intermediate factors remain live, but it cannot by itself make
 reversible Horner arithmetic or QROM free. The compact-normalization
 schedule is the strongest new measured application to this task.
+
+## G. Strong feasibility bound for 30x
+
+Even the **mandatory 22 input qubits** multiplied by the current
+compact-normalizer's **3218 native Toffoli-like operations** gives
+`22 * 3218 = 70796`, which is greater than the approximately
+`69229` 30x target — **before any synthesized rotation cost**.
+Therefore **workspace optimization alone cannot reach 30x** with
+our present gate inventory, even in the physically impossible ideal
+case of zero ancillas.
+
+At the actually measured 112 qubits, the allowed total
+Toffoli-equivalent cost would be only `69229/112 ≈ 618`.
+Our compact-normalizer already has **3218** non-Clifford
+Toffoli-like gates, and its 88 fine rotations add substantial synthesis
+cost. Causal measurement cleanup has already been used on the safe
+temporary ANDs, so simply repeating MBUC cannot close that gap.
+
+A 63-qubit circuit has a total allowance about `1099` eq.
+For comparison, the externally reported 63-qubit / ~20x design uses
+roughly 1334 mean Toffolis *plus* ~41 fine rotations. Even starting
+from that stronger public architecture, 30x requires further
+reduction in nonlinear gate operations, workspace, or both.
+
+This arithmetic bound does not rule out another architecture.
+It rules out expecting the requested 30x solely from cleaning
+the current polynomial/oracle workspace with measurements.
