@@ -6,6 +6,7 @@ from .priority1_model import Approximation, full_domain_screen
 from .priority1_kickmix import build_priority1
 from .priority1_truncated import build_truncated, plan
 from .priority1_exact import full_cut_screen
+from .priority1_streamed import build_streamed
 from .hybrid_kickmix import resource_counts
 from .hybrid_verify import verify_samples, boundary_inputs
 
@@ -21,6 +22,8 @@ def main():
     p.add_argument("--circuit",type=Path)
     p.add_argument("--full",action="store_true")
     p.add_argument("--truncated",action="store_true")
+    p.add_argument("--streamed",action="store_true",
+                   help="load and erase each polynomial coefficient independently")
     p.add_argument("--drops",type=str,
                    help="exhaustively screen comma-separated linear,square,quadratic drop counts")
     p.add_argument("--truncation-budget",type=float,default=.025,
@@ -37,14 +40,21 @@ def main():
                 p.error("--output required")
             cfg=Approximation(a.family,a.degree,a.segment_bits,a.precision)
             drops=tuple(map(int,a.drops.split(","))) if a.drops else None
-            circuit=(build_truncated(cfg,tolerance_fraction=a.truncation_budget,
-                                     explicit_drops=drops) if a.truncated
-                     else build_priority1(cfg))
+            if a.streamed:
+                if drops is None:
+                    p.error("--streamed requires --drops")
+                circuit=build_streamed(cfg,drops)
+            elif a.truncated:
+                circuit=build_truncated(cfg,tolerance_fraction=a.truncation_budget,
+                                        explicit_drops=drops)
+            else:
+                circuit=build_priority1(cfg)
             a.output.parent.mkdir(parents=True,exist_ok=True)
             circuit.to_file(a.output,format="kmb")
             result=dict(**resource_counts(circuit),file=str(a.output),
-                        architecture="truncated" if a.truncated else "full_product")
-            if a.truncated:
+                        architecture=("streamed" if a.streamed else
+                                      "truncated" if a.truncated else "full_product"))
+            if a.truncated or a.streamed:
                 result["truncation_plan"]=(full_cut_screen(cfg,drops) if drops is not None
                                             else plan(cfg,a.truncation_budget))
         else:
