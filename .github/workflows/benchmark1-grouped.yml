@@ -1,0 +1,44 @@
+name: benchmark-1-grouped-QROM
+on:
+  push:
+    branches: [benchmark-1]
+    paths: ['.github/workflows/benchmark1-grouped.yml']
+  workflow_dispatch:
+jobs:
+  grouped:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy scipy pytest pybind11==2.12.0
+      - run: |
+          git clone --depth 1 https://github.com/quantumlib/Qualtran.git /tmp/Qualtran
+          python -m pip install /tmp/Qualtran/kickmix
+      - name: Native coherent tests of four architecture choices
+        run: python -m pytest -q tests/test_priority1_grouped.py
+      - name: Compile, report resources, and verify sampled phase trajectories
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p out runs
+          for normal in serial barrel; do
+            for grouping in ab_c a_bc; do
+              name="${normal}_${grouping}"
+              python -m src.priority1_cli build --grouping "$grouping" \
+                 --normalization "$normal" --family chebyshev \
+                 --degree 2 --segment-bits 7 --precision 26 --drops 10,12,11 \
+                 --output "out/${name}.kmb" | tee "runs/${name}_resources.json"
+              python -m src.priority1_cli verify --circuit "out/${name}.kmb" \
+                 --random-count 8192 --output "runs/${name}_sample.json"
+            done
+          done
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: benchmark1-grouped-QROM
+          path: |
+            out/
+            runs/
