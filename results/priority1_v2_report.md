@@ -141,3 +141,19 @@ The next high-risk research direction must therefore fundamentally
 replace the multiplier/QROM work with a much cheaper diagonal-phase
 representation. The present phase-arithmetic architecture has been
 optimized materially, but does **not** meet the 30× objective.
+
+## First completed full-scale score in this round
+
+The conservative, tuned Chebyshev 6/25 truncated direct-phase circuit passed
+the independent pinned public mirror of the official Benchmark I verifier for
+all **200,540,928** trajectories. Its rotation-inclusive cost is
+**667,314.430894474** (= 156 qubits × 4277.656608297911 Toffoli-equivalent
+operations), an improvement over our earlier 876,513.3341652812 candidate.
+Worst error/tolerance is 0.8682547320913627.
+
+- [Full verified output](priority1_full_verified_score_6_25.json)
+- [CI evidence](https://github.com/ssp2195/Kaggle_Quantum_Computing/actions/runs/42627447581)
+
+The newer Chebyshev 7/26 with exact drops (10,12,11) has lower native
+resource counts but its full-scale rotation-inclusive score is to be
+reported separately, only after its own full verifier completes.
