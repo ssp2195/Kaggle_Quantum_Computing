@@ -1,0 +1,40 @@
+name: benchmark-1-alternative-normalization
+on:
+  push:
+    branches: [benchmark-1]
+    paths: ['.github/workflows/benchmark1-barrel.yml']
+  workflow_dispatch:
+jobs:
+  barrel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy scipy pytest pybind11==2.12.0
+      - run: |
+          git clone --depth 1 https://github.com/quantumlib/Qualtran.git /tmp/Qualtran
+          python -m pip install /tmp/Qualtran/kickmix
+      - name: Check alternate normalization and direct-phase correctness
+        run: |
+          python -m pytest -q tests/test_priority1_normalize.py tests/test_priority1_streamed.py
+      - name: Compare streaming normalization implementations
+        run: |
+          mkdir -p out runs
+          python -m src.priority1_cli build --streamed --normalization serial \
+             --family chebyshev --degree 2 --segment-bits 7 --precision 26 \
+             --drops 10,12,11 --output out/stream_serial.kmb | tee runs/serial.json
+          python -m src.priority1_cli build --streamed --normalization barrel \
+             --family chebyshev --degree 2 --segment-bits 7 --precision 26 \
+             --drops 10,12,11 --output out/stream_barrel.kmb | tee runs/barrel.json
+          python -m src.priority1_cli verify --circuit out/stream_barrel.kmb \
+             --random-count 16384 --output runs/barrel_samples.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: benchmark1-barrel-comparison
+          path: |
+            out/
+            runs/
