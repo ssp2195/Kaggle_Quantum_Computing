@@ -9,7 +9,7 @@ from src.hybrid_verify import verify_samples, boundary_inputs
 
 def test_tuned_cut_native_kickmix(tmp_path):
     cfg = Approximation("chebyshev-cut-tuned", 2, 7, 25)
-    circuit = build_truncated(cfg, explicit_drops=(9, 11, 11))
+    circuit = build_truncated(cfg, explicit_drops=(9, 10, 9))
     result = resource_counts(circuit)
     assert result["qubits"] < 165, result
     assert result["toffoli_like"] < 4490, result
