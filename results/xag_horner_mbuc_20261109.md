@@ -219,3 +219,23 @@ reduction in nonlinear gate operations, workspace, or both.
 This arithmetic bound does not rule out another architecture.
 It rules out expecting the requested 30x solely from cleaning
 the current polynomial/oracle workspace with measurements.
+
+## H. Upstream kickmix adder already uses measurement cleanup
+
+A source audit of upstream native kickmix's
+[reversible quantum adder](https://github.com/quantumlib/Qualtran/blob/main/kickmix/src/kickmix/gen/adders/gen_iadd.cc)
+shows that `gen_iadd` already includes X-basis measurements
+(`loop.hmr`) and conditional Clifford correction (`loop.cz_if`),
+and in certain carry-cleanup paths calls `builder.del_and`.
+The controlled increment generator
+[`gen_iadd1.cc`](https://github.com/quantumlib/Qualtran/blob/main/kickmix/src/kickmix/gen/adders/gen_iadd1.cc)
+uses a similar measurement-corrected cleanup chain.
+
+This is **source-derived evidence**, distinct from our measured native
+circuit metrics. Our MB-versus-coherent Horner comparison deliberately
+varies only the separate partial-product AND row cleanup; both
+implementations also inherit kickmix's existing measurement-aided
+adder cleanup. It would therefore be incorrect to claim that replacing
+`iadd` with a generic MBUC adder could automatically halve all its
+Toffoli-like costs again. Only a validated different carry/dataflow
+architecture could save further operations.
