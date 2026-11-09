@@ -19,6 +19,7 @@ jobs:
           - {family: chebyshev, degree: 2, segment: 7, precision: 26}
           - {family: chebyshev, degree: 3, segment: 4, precision: 26}
           - {family: minimax, degree: 2, segment: 7, precision: 26}
+          - {family: chebyshev-tuned, degree: 2, segment: 6, precision: 25}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
