@@ -19,10 +19,12 @@ class Approximation:
     precision: int = 26
 
     def __post_init__(self):
-        if self.family not in ("taylor", "chebyshev", "minimax", "chebyshev-tuned"):
+        if self.family not in ("taylor", "chebyshev", "minimax", "chebyshev-tuned", "chebyshev-cut-tuned"):
             raise ValueError("family must be taylor, chebyshev, minimax, or chebyshev-tuned")
         if self.degree not in (2, 3) or self.segment_bits not in range(4, 11):
             raise ValueError("degree 2 or 3, segment_bits 4..10 required")
+        if self.family == "chebyshev-cut-tuned" and (self.degree,self.segment_bits,self.precision) != (2,7,25):
+            raise ValueError("Integer cut-tuned family requires degree=2, p=7, q=25")
         if self.family == "chebyshev-tuned" and (self.degree,self.segment_bits,self.precision) != (2,6,25):
             raise ValueError("The quantization-aware adjustment is certified only for 2/6/25")
         if not 24 <= self.precision <= 34:
@@ -34,7 +36,7 @@ class Approximation:
 
 
 def _coefficients(family: str, degree: int, z0: float, h: float):
-    if family == "chebyshev-tuned":
+    if family in ("chebyshev-tuned", "chebyshev-cut-tuned"):
         family = "chebyshev"
     if family == "taylor":
         # binomial series of (1 + h*u/z0)^(-1/2).
@@ -74,6 +76,9 @@ def _coefficients(family: str, degree: int, z0: float, h: float):
 def coefficient_matrix(config: Approximation) -> np.ndarray:
     """Nonnegative packed magnitude coefficients; signs alternate + - + -."""
     p, q, d = config.segment_bits, config.precision, config.degree
+    if config.family == "chebyshev-cut-tuned":
+        from .priority1_integer_tuned import tuned_matrix
+        return tuned_matrix()
     mat = np.zeros((4 << p, d+1), dtype=np.int64)
     h = 2.0**(-p)
     for j in range(1 << p, 4 << p):

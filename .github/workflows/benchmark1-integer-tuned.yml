@@ -1,0 +1,39 @@
+name: benchmark-1-quantized-cut-minimax
+on:
+  push:
+    branches: [benchmark-1]
+    paths:
+      - 'src/priority1_integer_tuned.py'
+      - 'src/priority1_model.py'
+      - 'tests/test_priority1_integer_tuned.py'
+      - 'tests/test_priority1_integer_tuned_kickmix.py'
+      - '.github/workflows/benchmark1-integer-tuned.yml'
+  workflow_dispatch:
+jobs:
+  candidate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy scipy pytest pybind11==2.12.0
+      - run: |
+          git clone --depth 1 https://github.com/quantumlib/Qualtran.git /tmp/Qualtran
+          python -m pip install /tmp/Qualtran/kickmix
+      - name: Exhaustive 3,133,452-input coefficient/truncation screen
+        run: python -m pytest -q tests/test_priority1_integer_tuned.py
+      - name: Native 22-bit kickmix round trip and phase samples
+        run: python -m pytest -q tests/test_priority1_integer_tuned_kickmix.py
+      - name: Native resource counts and deterministic artifacts
+        run: |
+          mkdir -p runs out
+          python -m src.priority1_cli build --truncated --family chebyshev-cut-tuned             --degree 2 --segment-bits 7 --precision 25 --drops 9,11,11             --output out/quantized_cut_tuned_7_25.kmb | tee runs/resource.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: integer-tuned-kickmix-candidate
+          path: |
+            out/*.kmb
+            runs/*.json

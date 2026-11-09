@@ -15,7 +15,7 @@ from .hybrid_verify import verify_samples, boundary_inputs
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument("command",choices=["screen","build","verify"])
-    p.add_argument("--family",choices=["taylor","chebyshev","minimax","chebyshev-tuned"],default="chebyshev")
+    p.add_argument("--family",choices=["taylor","chebyshev","minimax","chebyshev-tuned","chebyshev-cut-tuned"],default="chebyshev")
     p.add_argument("--degree",type=int,default=2)
     p.add_argument("--segment-bits",type=int,default=6)
     p.add_argument("--precision",type=int,default=26)
