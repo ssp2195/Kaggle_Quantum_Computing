@@ -8,6 +8,7 @@ from src.priority1_model import Approximation, coefficient_matrix, pack_coeffici
     ("chebyshev",3,4,26),
     ("chebyshev",3,5,26),
     ("minimax",2,7,26),
+    ("chebyshev-tuned",2,6,25),
 ])
 def test_full_three_million_domain(family,degree,p,q):
     c=Approximation(family,degree,p,q)
