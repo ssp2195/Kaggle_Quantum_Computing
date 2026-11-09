@@ -1,0 +1,20 @@
+{
+  "candidate": "chebyshev-quadratic-p7-q26-cut-10-12-11",
+  "source": "pinned public mirror of inverse-square-root competition verifier",
+  "status": "PASS",
+  "score": 534105.9569245671,
+  "toffoli_equivalent": 3584.603737748773,
+  "toffoli_count": 2961,
+  "t_count": 1,
+  "rotation_count": 88,
+  "rotation_eps": 4.148117181923156e-13,
+  "num_qubits": 149,
+  "reaction_depth": 417,
+  "num_ops": 40698,
+  "verified_shots": 200540928,
+  "worst_error_over_tolerance": 0.717347376787342,
+  "worst_x": 235999,
+  "circuit_sha256": "88bc5caf6caf4f26c4adafd44f142a41acf08195424a9f05110808c8cab478b2",
+  "workflow_run": "https://github.com/ssp2195/Kaggle_Quantum_Computing/actions/runs/42629669231",
+  "kaggle_leaderboard_score": null
+}
