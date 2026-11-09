@@ -19,5 +19,7 @@
   "previous_verified_benchmark_1_q_times_c": 465259.6560053503,
   "google_reference_approx": 2076880,
   "target_benchmark_1_q_times_c": 69229.33333333333,
-  "kaggle_leaderboard_score": null
+  "kaggle_leaderboard_score": null,
+  "reproducibility_run": "https://github.com/ssp2195/Kaggle_Quantum_Computing/actions/runs/42664810852",
+  "reproducibility_status": "PASS; exact KMB SHA256 reconstructed; native coherent phase regression passed"
 }
