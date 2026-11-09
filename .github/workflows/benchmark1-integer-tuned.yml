@@ -29,7 +29,7 @@ jobs:
       - name: Native resource counts and deterministic artifacts
         run: |
           mkdir -p runs out
-          python -m src.priority1_cli build --truncated --family chebyshev-cut-tuned             --degree 2 --segment-bits 7 --precision 25 --drops 9,11,11             --output out/quantized_cut_tuned_7_25.kmb | tee runs/resource.json
+          python -m src.priority1_cli build --truncated --family chebyshev-cut-tuned             --degree 2 --segment-bits 7 --precision 25 --drops 9,10,9             --output out/quantized_cut_tuned_7_25.kmb | tee runs/resource.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
