@@ -203,3 +203,37 @@ diagonal-phase circuit, beyond optimizing this arithmetic architecture.
 We kept the legacy experiment branch unchanged; the connector cannot
 actually rename/delete a remote GitHub ref. `benchmark-1` is the new
 active branch with the complete inherited history.
+
+## Completed full verification: Chebyshev 7/26 exact truncated phase
+
+The (linear,square,quadratic) cut triple **(10,12,11)** passed the
+pinned public mirror of the official inverse-square-root verifier on
+**200,540,928 trajectories**. This is a measured, rotation-inclusive
+Benchmark I cost, not merely static gate counting and not a Kaggle
+leaderboard submission.
+
+| Metric | Verified result |
+|---|---:|
+| Status | PASS |
+| Full Benchmark I resource score Q*C | **534,105.9569245671** |
+| Qubits | 149 |
+| Toffoli-like operations | 2,961 |
+| Toffoli-equivalent including rotation synthesis | 3,584.603737748773 |
+| Fine rotations (executed per shot) | 88 |
+| Worst phase error / tolerance | 0.717347376787342 |
+| Shots verified | 200,540,928 |
+
+This gives **2,076,880 / 534,105.9569 = 3.89×** improvement in
+Benchmark I over the published Google baseline, corresponding to an
+estimated combined geometric-mean score of about **1.57** if DQI and
+DFTHCSOS remain at their baseline costs. It is still about **7.7×** above
+the ~69,229 cost required for a 30× reference improvement.
+
+[Full verifier run and .kmb artifact](https://github.com/ssp2195/Kaggle_Quantum_Computing/actions/runs/42629669231)
+
+The quantization-aware 7/25 and Walsh sparsity experiments are independent
+follow-up studies, not claims of a 30× result. The Walsh full 20-bit
+grid screen indicates naive sparse parity-phase synthesis requires ~1,800
+rotations on even one normalized interval and is therefore a weak candidate
+for achieving the stretch target through straightforward rotation synthesis.
+
