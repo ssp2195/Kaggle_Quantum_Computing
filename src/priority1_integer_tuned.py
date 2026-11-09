@@ -3,12 +3,12 @@
 This is different from rounding a real-valued minimax polynomial: each trial
 coefficient is evaluated with the same omitted partial products as _mul_cut.
 The deterministic coordinate search is restricted to degree=2, p=7, q=25,
-drops=(9,11,11). It is a candidate generator, NOT a proof of optimality.
+drops=(9,10,9). It is a candidate generator, NOT a proof of optimality.
 """
 from functools import lru_cache
 import numpy as np
 
-DROPS = (9, 11, 11)
+DROPS = (9, 10, 9)
 SEGMENT_BITS = 7
 PRECISION = 25
 LOW_BITS = 13
