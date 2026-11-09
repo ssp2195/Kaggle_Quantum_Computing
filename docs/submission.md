@@ -1,65 +1,78 @@
-# Preparing the complete Kaggle submission
+# Preparing the full Kaggle submission
 
-**Only Benchmark I (invsqrt) has been optimized.** Kaggle requires a **ZIP
-containing all three benchmark tasks**, so keep the competition-provided
-sample/reference DQI and DFTHCSOS files unchanged.
+Only Benchmark I (`invsqrt`) has been optimized by this branch. Keep the
+competition-provided sample/reference `dqi` and `dfthcsos` files unchanged
+unless separate independently verified improvements are available.
 
-## Verified Benchmark I result
+## New best fully verified Benchmark I result
 
-The publicly mirrored inverse-square-root verifier passed the complete
-200,540,928 shots for the 8/26 circuit on 2026-11-09.
+**Compact measurement-corrected normalization + grouped quadratic phase:**
 
-- Cost Q*C: **876,513.3341652812**
-- Qubits: **165**
-- Toffoli-equivalent cost: **5312.202025244128**
-- Toffoli-like: **4490**
-- Fine rotations actually executed per shot: **116**
-- Worst phase-error/tolerance: **0.6177643626145476**
-- Circuit SHA-256: `5ba3ac2adbf6d49def4b1ef2d00efcdbba73e82d94d178fa2613d1352e9ce26c`
+- Full public competition-verifier mirror: **PASS** on **200,540,928** shots.
+- Benchmark I cost `Q*C`: **430,259.61862786254**.
+- Peak qubits: **112**.
+- Native Toffoli-like operations: **3,218**.
+- Mean Toffoli-equivalent cost including rotations: **3,841.603737748773**.
+- Fine rotations per shot: **88**.
+- Worst phase-error / tolerance: **0.717347376787342**.
+- Certified circuit SHA-256:
+  `938d053f2218caa1859837ffb466ded01033c2d8d6445699276e5b4e21ebbc42`.
+- [Full successful verifier and .kmb artifact](https://github.com/ssp2195/Kaggle_Quantum_Computing/actions/runs/42657329801).
 
-[GitHub Actions full verifier](https://github.com/ssp2195/Kaggle_Quantum_Computing/actions/runs/42554578982).
-This **is not** a Kaggle leaderboard result.
+This is not a new Kaggle leaderboard submission. The user previously
+reported an actual combined Kaggle score of 1.33 from an earlier circuit.
 
-## Assemble the competition package
+## Reproduce or retrieve the certified KMB
 
-Download the complete competition data via the Kaggle website or an
-authenticated Kaggle client after accepting the competition rules. You need
-`sample_submission/dqi.kmb` and the entire
-`sample_submission/dfthcsos/` directory, including `submission.npz`.
+Download the certified `.kmb` from the GitHub Actions run above, or
+rebuild using the same pinned native kickmix version:
 
-Get the validated 8/26 circuit from the
-[mirrored-metric-8-26 workflow artifact](https://github.com/ssp2195/Kaggle_Quantum_Computing/actions/runs/42554578982),
-or rebuild it with native kickmix:
+```bash
+git clone https://github.com/quantumlib/Qualtran.git /tmp/Qualtran
+git -C /tmp/Qualtran checkout 9a0c11a4ee7697c082fbf8f2e1e8bf4a71fcb453
+python -m pip install /tmp/Qualtran/kickmix
 
-    python -m src.hybrid_cli build --segment-bits 8 --precision 26 --output out/hybrid_8_26.kmb
+python -m src.benchmark1_best --output out/best_invsqrt.kmb
+sha256sum out/best_invsqrt.kmb
+```
 
-Create the ZIP:
+`src.benchmark1_best` validates resource counts and rejects any serialized
+circuit whose SHA-256 differs from the full-verifier-certified artifact.
+Different versions of kickmix may produce a different .kmb and require
+independent complete verification.
 
-    python -m scripts.package_submission \
-        --invsqrt out/hybrid_8_26.kmb \
-        --reference official \
-        --output out/submission.zip
+## Assemble a three-task submission ZIP
 
-Validate the ZIP contents:
+Download official competition data after accepting the rules. You need
+`sample_submission/dqi.kmb` and all
+`sample_submission/dfthcsos/` files, including `submission.npz`.
 
-    python -m zipfile -l out/submission.zip
+```bash
+python -m scripts.package_submission \
+    --invsqrt out/best_invsqrt.kmb \
+    --reference official \
+    --output out/submission.zip
 
-Submit with an authenticated Kaggle CLI (configure authentication *locally*;
-do not commit or echo tokens):
+python -m zipfile -l out/submission.zip
+```
 
-    kaggle competitions submit \
-        -c google-verifiable-quantum-circuit-compilation \
-        -f out/submission.zip \
-        -m "Normalized quadratic direct-phase invsqrt 8/26; unchanged reference DQI/DFTHCSOS"
+Submit using a locally authenticated Kaggle CLI. Do not put tokens in
+source code, shell history, repository secrets or public job logs.
 
-Check the actual Kaggle leaderboard result:
+```bash
+kaggle competitions submit \
+    -c google-verifiable-quantum-circuit-compilation \
+    -f out/submission.zip \
+    -m "112q MBUC-normalized invsqrt; reference DQI/DFTHCSOS"
 
-    kaggle competitions submissions -c google-verifiable-quantum-circuit-compilation
+kaggle competitions submissions \
+    -c google-verifiable-quantum-circuit-compilation
+```
 
-Remember the leaderboard score is a **geometric mean of the three task
-improvement factors**, not the Benchmark I cost. Assuming the two reference
-tasks are unchanged, the expected combined score is approximately
-`(2076880 / 876513.3341652812) ** (1/3)`, which is roughly 1.33,
-**not an official leaderboard score**.
+**Expected leaderboard effect**, assuming the other two benchmark costs
+stay at their references: `(2076880 / 430259.61862786254)**(1/3)`
+≈ **1.69**, not an official measured score. The **30× Benchmark I**
+stretch goal corresponds to `Q*C ≤ 69229.33`, still **6.215×** lower
+than the present verified circuit.
 
-No credential or token is stored anywhere in this repository.
+No Kaggle authentication credential is committed to the repository.
