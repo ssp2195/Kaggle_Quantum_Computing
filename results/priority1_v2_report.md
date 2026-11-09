@@ -157,3 +157,23 @@ Worst error/tolerance is 0.8682547320913627.
 The newer Chebyshev 7/26 with exact drops (10,12,11) has lower native
 resource counts but its full-scale rotation-inclusive score is to be
 reported separately, only after its own full verifier completes.
+
+
+## Coefficient streaming to reduce peak ancilla count
+
+A separate native kickmix candidate was implemented in
+`src/priority1_streamed.py`. The normalization, phase model, and exact
+truncation (10,12,11) are unchanged, but coefficients are loaded and
+uncomputed separately for the constant, linear and quadratic phases.
+This reduces the live workspace during multiplication.
+
+| Coefficient strategy | Q | Toffoli-like | Static fine rotations | Sampled failures |
+|---|---:|---:|---:|---:|
+| Joint QROM, all coefficients live | 149 | 2961 | 88 | 0 |
+| One coefficient at a time | **111** | 4063 | 88 | 0 |
+
+[Full native kickmix test evidence](https://github.com/ssp2195/Kaggle_Quantum_Computing/actions/runs/42630388609).
+
+The Q gain is large (38 qubits); the Toffoli penalty is also large
+(1102 extra operations). Neither implementation is declared winner
+until the rotation-inclusive resource scoring comparison is complete.
