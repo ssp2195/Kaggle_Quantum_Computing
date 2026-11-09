@@ -65,7 +65,7 @@ def assess():
         per_term[str(assumed_qubits)] = dict(
             rotations_only_cost_if_one_fine_angle_per_raw_term=
                 assumed_qubits*n*eq_per_rotation,
-            30x_allowable_equivalent_operations=TARGET_QC/assumed_qubits,
+            allowable_equivalent_operations_at_30x=TARGET_QC/assumed_qubits,
             max_fine_rotations_if_zero_Toffolis_and_same_rate=
                 int(TARGET_QC/(assumed_qubits*eq_per_rotation)),
         )
