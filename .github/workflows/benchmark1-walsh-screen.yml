@@ -1,0 +1,24 @@
+name: benchmark-1-walsh-full-grid-screen
+on:
+  push:
+    branches: [benchmark-1]
+    paths:
+      - 'src/priority1_walsh_screen.py'
+      - 'tests/test_priority1_walsh_screen.py'
+      - '.github/workflows/benchmark1-walsh-screen.yml'
+  workflow_dispatch:
+jobs:
+  full-grid:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy pytest
+      - run: python -m pytest -q tests/test_priority1_walsh_screen.py
+      - run: python -m src.priority1_walsh_screen --output runs/walsh_screen.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: full-grid-walsh-screen
+          path: runs/walsh_screen.json
