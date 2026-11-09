@@ -5,7 +5,7 @@ partial products entirely. Their maximum possible numerical contribution
 is bounded independently of x. Does not assume ignored carries are zero.
 """
 from __future__ import annotations
-from .priority1_model import Approximation, pack_coefficients
+from .priority1_model import Approximation, pack_coefficients, full_domain_screen
 from .hybrid_model import NORMAL_BITS, TOL
 from .hybrid_kickmix import _normalize, _denormalize, _phase
 
@@ -94,6 +94,10 @@ def _mul_cut(builder,a,b,dest,drop,inverse=False):
 def build_truncated(config: Approximation, *, tolerance_fraction=.025):
     import kickmix as km
     parameters=plan(config,tolerance_fraction)
+    mathematical=full_domain_screen(config)
+    if (not mathematical["passes"] or
+            mathematical["worst_error_ratio"]+parameters["addition_error_bound"]>=1):
+        raise ValueError("Phase-error budget not certified over the complete input domain")
     dl,ds,dq=(parameters[k] for k in
               ("linear_drop","square_drop","quadratic_drop"))
     table,widths=pack_coefficients(config)
