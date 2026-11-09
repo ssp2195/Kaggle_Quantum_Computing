@@ -177,3 +177,29 @@ This reduces the live workspace during multiplication.
 The Q gain is large (38 qubits); the Toffoli penalty is also large
 (1102 extra operations). Neither implementation is declared winner
 until the rotation-inclusive resource scoring comparison is complete.
+
+## Grouped coefficient lookup and barrel normalization
+
+Four real native kickmix architectures were compiled and tested over
+deterministic boundary/pseudorandom inputs with 64 shots each. All passed
+the sampled oracle/scratch/phase verifier. All implement the same p7/q26
+Chebyshev quadratic with exact dropped partial products (10,12,11).
+
+| QROM coefficient grouping | Normalization | Q | Toffoli-like | Static fine rotations | Sample failures |
+|---|---|---:|---:|---:|---:|
+| A,B then C | Serial | 138 | 3512 | 88 | 0 |
+| A then B,C | Serial | 122 | 3512 | 88 | 0 |
+| A,B then C | Barrel | 138 | 3190 | 88 | 0 |
+| **A then B,C** | **Barrel** | **122** | **3190** | **88** | **0** |
+
+[Native sampled CI evidence](https://github.com/ssp2195/Kaggle_Quantum_Computing/actions/runs/42631502737).
+[Full competition-style verification](https://github.com/ssp2195/Kaggle_Quantum_Computing/actions/workflows/benchmark1-grouped-barrel-full.yml)
+has been launched for A then B,C / barrel. This is the strongest
+work-space tradeoff so far, but does NOT yet have a verified Q*C score.
+Its Toffoli-only lower bound is 122×3190=389,180, still >5.6× the 30×
+benchmark target of 69,229. Solving 30× requires a radically different
+diagonal-phase circuit, beyond optimizing this arithmetic architecture.
+
+We kept the legacy experiment branch unchanged; the connector cannot
+actually rename/delete a remote GitHub ref. `benchmark-1` is the new
+active branch with the complete inherited history.
