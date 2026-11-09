@@ -1,3 +1,26 @@
+# Benchmark I — Priority 1 optimization experiments
+
+**Active research branch:** `benchmark-1`. For current results, algorithms,
+validation status, and the explicit 30× reference-cost stretch objective, see
+[Priority 1 report](results/priority1_v2_report.md).
+
+**Reproduce newer experiments** (requires `numpy`, `scipy`, and the
+native C++20 `kickmix` extension from Qualtran):
+
+```bash
+python -m pytest -q tests/test_priority1_model.py tests/test_priority1_exact.py
+python -m src.priority1_cli build --truncated --family chebyshev \
+  --degree 2 --segment-bits 7 --precision 26 --drops 10,11,12 \
+  --output out/chebyshev_7_26.kmb
+python -m src.priority1_cli verify --circuit out/chebyshev_7_26.kmb --full
+```
+
+The 30× target is **not yet achieved**. Native sampled verification,
+complete-domain mathematical screening, and full official-style resource
+verification have different evidentiary strength; consult the report.
+
+---
+
 
 ## Current focus: normalized hybrid direct phase
 
