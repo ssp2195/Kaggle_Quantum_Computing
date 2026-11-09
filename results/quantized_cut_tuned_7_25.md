@@ -61,3 +61,26 @@ before rotation synthesis. It is >6x above the target cost; coefficient
 tuning alone cannot close this gap. A fundamentally different direct
 phase representation with vastly fewer nonlinear gate operations or
 workspace qubits would be required.
+
+## Native kickmix outcome (completed)
+
+[Native CI run 42632099404](https://github.com/ssp2195/Kaggle_Quantum_Computing/actions/runs/42632099404)
+**passed**. It constructed and reloaded the real C++20 kickmix 22-bit
+circuit, verified 64 measurement trajectories per selected input, and
+recorded:
+
+- Qubits: **143**
+- Native Toffoli-like gates: **3,155**
+- Static fine Z_POW rotations: **90**
+- Exhaustive 3,133,452-input mathematical phase screen: **PASS**
+- Worst mathematical error/tolerance: **0.7617151634552422**
+
+The computed lower bound Q * Toffoli-like = **451,165** is
+already **6.52 times the 30x target cost** of 69,229, even
+pretending rotations are free. This variant therefore cannot
+meet the 30x objective.
+
+[Full pinned competition verifier](https://github.com/ssp2195/Kaggle_Quantum_Computing/actions/runs/42632573053)
+was launched separately for 200,540,928 trajectories and the rotation-
+inclusive resource score; do not report a verified Q*C until its PASS
+and measured score are available.
