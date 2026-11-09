@@ -40,7 +40,7 @@ Baseline reference: Q=260, Toffoli count=7,735, fine Z_POW=37 and official task 
 
 **Full trajectory matrix:** https://github.com/ssp2195/Kaggle_Quantum_Computing/actions/runs/42509940993
 
-Full-scale jobs are configured to test **3,133,452 x values × 64 shots = 200,540,928 trajectories each** using real kickmix. This document distinguishes pending full-scale results from already completed experiments. The official verifier requires authenticated Kaggle competition files and remains authoritative for a submitted PASS and Q*C score.
+The three native kickmix full-scale jobs **completed successfully**, testing **3,133,452 x values × 64 shots = 200,540,928 trajectories each**, with zero failures. See results/hybrid_full_native.json and the linked GitHub Actions job logs. The official verifier requires authenticated Kaggle competition files and remains authoritative for a submitted PASS and Q*C score.
 
 ## Reproduce
 
@@ -88,3 +88,15 @@ with reversible adders, carry-safe multiplication and exact fractional
 Z_POW exponents. An official verifier run is still required to establish
 that the generated .kmb meets the competition's complete implementation
 and resource-accounting rules.
+
+## Completed native 200-million-trajectory results
+
+| config | inputs | shots | failures | worst error / tolerance | elapsed seconds |
+|---|---:|---:|---:|---:|---:|
+| 8/26 | 3133452 | 200540928 | 0 | 0.61776357 | 1358.2 |
+| 8/28 | 3133452 | 200540928 | 0 | 0.32947266 | 1028.9 |
+| 9/28 | 3133452 | 200540928 | 0 | 0.15536362 | 1336.2 |
+
+All input qubits were restored and scratch remained zero on all trajectories in these **native-development-verifier** runs. They use floating-point reference phases and not the competition's final 64-bit fixed-point evaluator. An additional pinned independent mirror of the official verifier is run separately under GitHub Actions to obtain the official-style rotation-synthesis charge. Do not conflate the two runs.
+
+**Evidence:** [GitHub Actions full native 200M each](https://github.com/ssp2195/Kaggle_Quantum_Computing/actions/runs/42509940993).

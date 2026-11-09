@@ -1,0 +1,50 @@
+[
+  {
+    "segment_bits": 8,
+    "precision": 26,
+    "qubits": 165,
+    "toffoli_like": 4490,
+    "t_like": 1,
+    "fine_rotations": 119,
+    "checked_inputs": 3133452,
+    "shots_per_input": 64,
+    "total_trajectories": 200540928,
+    "failures": 0,
+    "worst_error_over_tolerance": 0.6177635655819055,
+    "elapsed_seconds": 1358.173061695,
+    "run_id": 42509940993,
+    "job_id": 128820596888
+  },
+  {
+    "segment_bits": 8,
+    "precision": 28,
+    "qubits": 177,
+    "toffoli_like": 4808,
+    "t_like": 1,
+    "fine_rotations": 125,
+    "checked_inputs": 3133452,
+    "shots_per_input": 64,
+    "total_trajectories": 200540928,
+    "failures": 0,
+    "worst_error_over_tolerance": 0.32947265730914893,
+    "elapsed_seconds": 1028.940064304,
+    "run_id": 42509940993,
+    "job_id": 128820596803
+  },
+  {
+    "segment_bits": 9,
+    "precision": 28,
+    "qubits": 164,
+    "toffoli_like": 5356,
+    "t_like": 1,
+    "fine_rotations": 119,
+    "checked_inputs": 3133452,
+    "shots_per_input": 64,
+    "total_trajectories": 200540928,
+    "failures": 0,
+    "worst_error_over_tolerance": 0.15536361837389304,
+    "elapsed_seconds": 1336.200429219,
+    "run_id": 42509940993,
+    "job_id": 128820596615
+  }
+]
