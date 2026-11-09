@@ -91,15 +91,23 @@ def _mul_cut(builder,a,b,dest,drop,inverse=False):
         builder.free(row)
 
 
-def build_truncated(config: Approximation, *, tolerance_fraction=.025):
+def build_truncated(config: Approximation, *, tolerance_fraction=.025,
+                    explicit_drops=None):
     import kickmix as km
-    parameters=plan(config,tolerance_fraction)
-    mathematical=full_domain_screen(config)
-    if (not mathematical["passes"] or
-            mathematical["worst_error_ratio"]+parameters["addition_error_bound"]>=1):
-        raise ValueError("Phase-error budget not certified over the complete input domain")
-    dl,ds,dq=(parameters[k] for k in
-              ("linear_drop","square_drop","quadratic_drop"))
+    if explicit_drops is None:
+        parameters=plan(config,tolerance_fraction)
+        mathematical=full_domain_screen(config)
+        if (not mathematical["passes"] or
+                mathematical["worst_error_ratio"]+parameters["addition_error_bound"]>=1):
+            raise ValueError("Phase-error budget not certified over the complete input domain")
+        dl,ds,dq=(parameters[k] for k in
+                  ("linear_drop","square_drop","quadratic_drop"))
+    else:
+        from .priority1_exact import full_cut_screen
+        dl,ds,dq=tuple(int(k) for k in explicit_drops)
+        report=full_cut_screen(config,(dl,ds,dq))
+        if report["failed_inputs"] or report["worst_error_over_tolerance"]>=.85:
+            raise ValueError("Exhaustive finite-domain phase test fails or has too little margin")
     table,widths=pack_coefficients(config)
     lo=config.low_bits
     builder=km.CircuitBuilder()
