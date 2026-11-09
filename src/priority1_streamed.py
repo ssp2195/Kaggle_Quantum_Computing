@@ -8,13 +8,19 @@ semantics as priority1_truncated.build_truncated.
 from __future__ import annotations
 from .hybrid_kickmix import _normalize, _denormalize, _phase, resource_counts
 from .hybrid_model import NORMAL_BITS
+from .priority1_normalize import normalize_barrel, denormalize_barrel
 from .priority1_model import Approximation, coefficient_matrix
 from .priority1_exact import full_cut_screen
 from .priority1_truncated import _mul_cut
 
 
-def build_streamed(config: Approximation, drops=(10, 12, 11)):
+def build_streamed(config: Approximation, drops=(10, 12, 11), *, normalization="serial"):
     import kickmix as km
+    if normalization not in ("serial","barrel"):
+        raise ValueError("normalization must be serial or barrel")
+    normalize,denormalize=(
+        (_normalize,_denormalize) if normalization=="serial"
+        else (normalize_barrel,denormalize_barrel))
     if config.degree != 2:
         raise ValueError("Coefficient streaming currently requires a quadratic")
     dl, ds, dq = tuple(int(i) for i in drops)
@@ -29,7 +35,7 @@ def build_streamed(config: Approximation, drops=(10, 12, 11)):
     builder=km.CircuitBuilder()
     x=builder.create_quantum_register(NORMAL_BITS,name="x")
     with builder.mark("normalize"):
-        flags,shift=_normalize(builder,x)
+        flags,shift=normalize(builder,x)
 
     def lookup(degree):
         term=builder.alloc_qubits(widths[degree])
@@ -71,5 +77,5 @@ def build_streamed(config: Approximation, drops=(10, 12, 11)):
         builder.free(square)
 
     with builder.mark("restore_input"):
-        _denormalize(builder,x,flags,shift)
+        denormalize(builder,x,flags,shift)
     return builder.finish_circuit()
