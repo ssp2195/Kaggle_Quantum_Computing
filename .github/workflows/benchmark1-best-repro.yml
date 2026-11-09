@@ -1,0 +1,42 @@
+name: benchmark-1-best-verified-reproducibility
+on:
+  push:
+    branches: [benchmark-1]
+    paths:
+      - 'src/benchmark1_best.py'
+      - 'src/benchmark1_compact_normalize.py'
+      - 'src/priority1_grouped.py'
+      - 'src/priority1_model.py'
+      - 'tests/test_benchmark1_best.py'
+      - '.github/workflows/benchmark1-best-repro.yml'
+  workflow_dispatch:
+jobs:
+  reproduce:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy scipy pytest pybind11==2.12.0
+      - name: Build same pinned native C++ kickmix used for full PASS
+        run: |
+          git clone https://github.com/quantumlib/Qualtran.git /tmp/Qualtran
+          git -C /tmp/Qualtran checkout 9a0c11a4ee7697c082fbf8f2e1e8bf4a71fcb453
+          python -m pip install /tmp/Qualtran/kickmix
+      - name: Rebuild best circuit and check full-verifier-certified SHA-256
+        run: |
+          mkdir -p out runs
+          python -m src.benchmark1_best --output out/best_invsqrt.kmb | tee runs/rebuilt_resources.json
+          sha256sum out/best_invsqrt.kmb | tee runs/circuit_sha256.txt
+      - name: Verify coherent phase and scratch on representative inputs
+        run: python -m pytest -q tests/test_benchmark1_best.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: benchmark1-best-112q-verified-sha-reproduction
+          path: |
+            out/best_invsqrt.kmb
+            runs/rebuilt_resources.json
+            runs/circuit_sha256.txt
