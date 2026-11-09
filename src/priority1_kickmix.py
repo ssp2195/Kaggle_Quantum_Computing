@@ -35,7 +35,7 @@ def build_priority1(config: Approximation):
     # at a time, then uncompute it after imprinting its phase.
     powers=[]
     for degree in range(1,config.degree+1):
-        source = x[:low_bits] if degree==1 else powers[-1]
+        source = x[:low_bits] if degree<=2 else powers[-1]
         if degree > 1:
             power=builder.alloc_qubits(degree*low_bits)
             builder.reset(power)
