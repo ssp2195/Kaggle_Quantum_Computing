@@ -1,0 +1,39 @@
+{
+  "source": "https://github.com/ssp2195/Kaggle_Quantum_Computing/actions/runs/42647183393",
+  "source_type": "native kickmix isolated stage circuits; stage peak qubits NOT additive",
+  "coeff_widths": [
+    27,
+    18,
+    11
+  ],
+  "normalization_and_restore": {
+    "toffoli_like": 228,
+    "fine_rotations": 0
+  },
+  "AB_lookup_and_unlookup": {
+    "toffoli_like": 551,
+    "fine_rotations": 0
+  },
+  "C_lookup_and_unlookup": {
+    "toffoli_like": 551,
+    "fine_rotations": 0
+  },
+  "constant_phase": {
+    "toffoli_like": 180,
+    "fine_rotations": 33
+  },
+  "linear_phase_with_reversible_product": {
+    "toffoli_like": 866,
+    "fine_rotations": 31
+  },
+  "quadratic_phase_rows": {
+    "toffoli_like": 814,
+    "fine_rotations": 24
+  },
+  "quadratic_phase_symmetric": {
+    "toffoli_like": 1516,
+    "fine_rotations": 24
+  },
+  "baseline_total_toffoli_like": 3190,
+  "symmetric_total_toffoli_like": 3892
+}

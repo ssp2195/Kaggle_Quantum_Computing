@@ -1,0 +1,14 @@
+{
+  "candidate": "piecewise-linear-Chebyshev-p10-q28-linear-drop7",
+  "checked_inputs": 3133452,
+  "worst_error_over_tolerance": 0.800887677818537,
+  "worst_x": 1056255,
+  "failed_inputs": 0,
+  "coefficient_widths": [
+    28,
+    17
+  ],
+  "normalized_intervals": 3072,
+  "lookup_rows": 4096,
+  "source": "Classical exhaustive screen replicating exact omitted partial products; not native circuit verification"
+}
