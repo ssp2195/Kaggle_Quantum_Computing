@@ -1,0 +1,39 @@
+name: benchmark-1-compact-MBUC-normalization
+on:
+  push:
+    branches: [benchmark-1]
+    paths:
+      - 'src/benchmark1_compact_normalize.py'
+      - 'src/priority1_grouped.py'
+      - 'tests/test_benchmark1_compact_normalize.py'
+      - '.github/workflows/benchmark1-compact-normalize.yml'
+  workflow_dispatch:
+jobs:
+  compact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy scipy pytest pybind11==2.12.0
+      - run: |
+          git clone --depth 1 https://github.com/quantumlib/Qualtran.git /tmp/Qualtran
+          python -m pip install /tmp/Qualtran/kickmix
+      - name: Native coherent measurement-phase and input-cleanup tests
+        run: python -m pytest -q -s tests/test_benchmark1_compact_normalize.py
+      - name: Generate complete 22-bit native compact candidate
+        run: |
+          mkdir -p out runs
+          python -m src.priority1_cli build --grouping a_bc \
+            --normalization compact --family chebyshev \
+            --degree 2 --segment-bits 7 --precision 26 --drops 10,12,11 \
+            --output out/compact_phase.kmb | tee runs/resources.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: compact-mbuc-normalized-invsqrt
+          path: |
+            out/*.kmb
+            runs/*.json

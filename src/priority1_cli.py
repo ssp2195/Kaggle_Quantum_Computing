@@ -23,7 +23,7 @@ def main():
     p.add_argument("--circuit",type=Path)
     p.add_argument("--full",action="store_true")
     p.add_argument("--truncated",action="store_true")
-    p.add_argument("--normalization",choices=["serial","barrel"],default="serial")
+    p.add_argument("--normalization",choices=["serial","barrel","compact"],default="serial")
     p.add_argument("--grouping",choices=["ab_c","a_bc"],
                    help="two-stage coefficient lookup grouping")
     p.add_argument("--streamed",action="store_true",

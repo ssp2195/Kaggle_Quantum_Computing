@@ -10,6 +10,7 @@ from .priority1_exact import full_cut_screen
 from .priority1_truncated import _mul_cut
 from .benchmark1_symmetric_square import square_symmetric
 from .priority1_normalize import normalize_barrel, denormalize_barrel
+from .benchmark1_compact_normalize import normalize_compact, denormalize_compact
 from .hybrid_kickmix import _normalize, _denormalize, _phase
 from .hybrid_model import NORMAL_BITS
 
@@ -19,8 +20,8 @@ def build_grouped(config: Approximation, drops=(10,12,11), *,
     import kickmix as km
     if config.degree!=2 or grouping not in ("ab_c","a_bc"):
         raise ValueError("Grouping must be ab_c or a_bc for a quadratic")
-    if normalization not in ("serial","barrel"):
-        raise ValueError("Normalization must be serial or barrel")
+    if normalization not in ("serial","barrel","compact"):
+        raise ValueError("Normalization must be serial, barrel or compact")
     if square_method not in ("rows", "symmetric"):
         raise ValueError("square_method must be rows or symmetric")
     dl,ds,dq=(int(v) for v in drops)
@@ -34,6 +35,7 @@ def build_grouped(config: Approximation, drops=(10,12,11), *,
     x=b.create_quantum_register(NORMAL_BITS,name="x")
     norm,undo=(
         (_normalize,_denormalize) if normalization=="serial"
+        else (normalize_compact,denormalize_compact) if normalization=="compact"
         else (normalize_barrel,denormalize_barrel))
     flags,shift=norm(b,x)
 
