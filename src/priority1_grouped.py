@@ -8,18 +8,21 @@ from __future__ import annotations
 from .priority1_model import Approximation, coefficient_matrix
 from .priority1_exact import full_cut_screen
 from .priority1_truncated import _mul_cut
+from .benchmark1_symmetric_square import square_symmetric
 from .priority1_normalize import normalize_barrel, denormalize_barrel
 from .hybrid_kickmix import _normalize, _denormalize, _phase
 from .hybrid_model import NORMAL_BITS
 
 
 def build_grouped(config: Approximation, drops=(10,12,11), *,
-                  grouping="ab_c", normalization="serial"):
+                  grouping="ab_c", normalization="serial", square_method="rows"):
     import kickmix as km
     if config.degree!=2 or grouping not in ("ab_c","a_bc"):
         raise ValueError("Grouping must be ab_c or a_bc for a quadratic")
     if normalization not in ("serial","barrel"):
         raise ValueError("Normalization must be serial or barrel")
+    if square_method not in ("rows", "symmetric"):
+        raise ValueError("square_method must be rows or symmetric")
     dl,ds,dq=(int(v) for v in drops)
     cert=full_cut_screen(config,(dl,ds,dq))
     if not cert["passes"] or cert["worst_error_over_tolerance"]>=.85:
@@ -69,14 +72,20 @@ def build_grouped(config: Approximation, drops=(10,12,11), *,
     def phase_quadratic(coeff):
         sq=b.alloc_qubits(2*lo-ds)
         b.reset(sq)
-        _mul_cut(b,x[:lo],x[:lo],sq,ds)
+        if square_method == "symmetric":
+            square_symmetric(b,x[:lo],sq,ds)
+        else:
+            _mul_cut(b,x[:lo],x[:lo],sq,ds)
         prod=b.alloc_qubits(len(coeff)+len(sq)-dq)
         b.reset(prod)
         _mul_cut(b,coeff,sq,prod,dq)
         _phase(b,prod,shift,config.precision+2*lo-ds-dq,+1)
         _mul_cut(b,coeff,sq,prod,dq,inverse=True)
         b.free(prod)
-        _mul_cut(b,x[:lo],x[:lo],sq,ds,inverse=True)
+        if square_method == "symmetric":
+            square_symmetric(b,x[:lo],sq,ds,inverse=True)
+        else:
+            _mul_cut(b,x[:lo],x[:lo],sq,ds,inverse=True)
         b.free(sq)
 
     if grouping=="ab_c":
