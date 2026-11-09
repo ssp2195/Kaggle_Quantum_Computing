@@ -1,0 +1,19 @@
+{
+  "candidate": "chebyshev-tuned-quadratic-6-25-conservative-truncation",
+  "source": "public mirror pinned competitor verifier",
+  "status": "PASS",
+  "score": 667314.430894474,
+  "toffoli_equivalent": 4277.656608297911,
+  "toffoli_count": 3561,
+  "t_count": 1,
+  "rotation_count": 99,
+  "rotation_eps": 1.9460684698584434e-13,
+  "num_qubits": 156,
+  "reaction_depth": 631,
+  "num_ops": 34425,
+  "verified_shots": 200540928,
+  "worst_error_over_tolerance": 0.8682547320913627,
+  "worst_x": 1077247,
+  "circuit_sha256": "cd6cd26c74fb64e0f57745fcbed4dee7b726fa0998f910a2753ade6c83cf1c7d",
+  "workflow_run": "https://github.com/ssp2195/Kaggle_Quantum_Computing/actions/runs/42627447581"
+}
