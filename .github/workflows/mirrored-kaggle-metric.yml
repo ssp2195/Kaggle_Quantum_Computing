@@ -1,0 +1,73 @@
+name: mirrored-kaggle-invsqrt-metric
+on:
+  push:
+    branches: [benchmark1-direct-phase-experiments-20261108]
+    paths: ['.github/workflows/mirrored-kaggle-metric.yml']
+  workflow_dispatch:
+jobs:
+  metric:
+    runs-on: ubuntu-latest
+    timeout-minutes: 65
+    strategy:
+      fail-fast: false
+      matrix:
+        variant: ['8-26', '8-28', '9-28']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy==2.4.6 pybind11==2.12.0
+      - name: Build pinned upstream C++ kickmix
+        run: |
+          git clone https://github.com/quantumlib/Qualtran.git /tmp/Qualtran
+          git -C /tmp/Qualtran checkout 9a0c11a4ee7697c082fbf8f2e1e8bf4a71fcb453
+          python -m pip install /tmp/Qualtran/kickmix
+      - name: Fetch and integrity-check independent mirror of Kaggle verifier
+        run: |
+          mkdir -p mirror
+          curl --fail --location --retry 3 --silent --show-error \
+            https://raw.githubusercontent.com/Inzainos/quantum-circuit-compilation/3dc0c58c5aa303ec8319433aded257aa757d14db/verifiers/invsqrt/verify_submission_invsqrt.py \
+            -o mirror/verify_submission_invsqrt.py
+          python - <<'PY'
+          import hashlib
+          from pathlib import Path
+          b=Path("mirror/verify_submission_invsqrt.py").read_bytes()
+          sha=hashlib.sha1(b"blob "+str(len(b)).encode()+b"\0"+b).hexdigest()
+          assert sha=="1fa529e9790a5cb000ee7f084e197c9252e5f9d7",sha
+          print("Pinned public verifier mirror Git blob verified:",sha)
+          print("Source SHA256:",hashlib.sha256(b).hexdigest())
+          PY
+      - name: Build candidate .kmb using native kickmix
+        shell: bash
+        run: |
+          IFS=- read P Q <<< "${{ matrix.variant }}"
+          mkdir -p out runs
+          python -m src.hybrid_cli build --segment-bits "$P" --precision "$Q" --output "out/hybrid_${P}_${Q}.kmb" \
+            | tee "runs/build_${P}_${Q}.json"
+      - name: Preflight mirrored metric verifier
+        shell: bash
+        run: |
+          IFS=- read P Q <<< "${{ matrix.variant }}"
+          OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 \
+          python -I mirror/verify_submission_invsqrt.py "out/hybrid_${P}_${Q}.kmb" \
+            --max-x 256 --shots-per-x 64 --batch-size 256 --max-workers 2 \
+            --salt quantum-circuit-local-v1 > "runs/metric_${P}_${Q}_smoke.json"
+          cat "runs/metric_${P}_${Q}_smoke.json"
+      - name: Full mirrored metric verifier (200540928 trajectories)
+        shell: bash
+        run: |
+          IFS=- read P Q <<< "${{ matrix.variant }}"
+          OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 \
+          python -I mirror/verify_submission_invsqrt.py "out/hybrid_${P}_${Q}.kmb" \
+            --n-p 10 --beta 1 --precision-bits 24 --eta 218 \
+            --max-x 3133452 --shots-per-x 64 --batch-size 256 --max-workers 4 \
+            --salt quantum-circuit-local-v1 > "runs/metric_${P}_${Q}_full.json"
+          cat "runs/metric_${P}_${Q}_full.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mirrored-metric-${{ matrix.variant }}
+          path: |
+            runs/
+            out/*.kmb
