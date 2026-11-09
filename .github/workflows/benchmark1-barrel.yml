@@ -2,7 +2,9 @@ name: benchmark-1-alternative-normalization
 on:
   push:
     branches: [benchmark-1]
-    paths: ['.github/workflows/benchmark1-barrel.yml']
+    paths:
+      - '.github/workflows/benchmark1-barrel.yml'
+      - 'tests/test_priority1_normalize.py'
   workflow_dispatch:
 jobs:
   barrel:
