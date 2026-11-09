@@ -104,3 +104,40 @@ rename endpoint or delete old refs. The branch `benchmark-1` was created
 at the former branch's latest commit, preserving all history; the old
 branch remains as an unmodified legacy ref. A true rename can be done
 through GitHub repository Settings > Branches (or the branch UI) if desired.
+
+## Strongest exact finite-domain truncation candidates (native kickmix)
+
+To improve on the conservative uniform bound, the integer model
+`src/priority1_exact.py` explicitly computes omitted low partial
+products, and checks **every x in 1..3,133,452**. The model uses exact
+integer multiplication-and-shift structure and double-precision relative
+phase comparison; the .kmb is also tested with native kickmix on thousands
+of boundary and pseudorandom inputs, 64 shots each.
+
+| Cut settings (linear, square, quadratic) | Q | Toffoli-like | Static fine rotations | Full-domain worst error/tolerance | Native sampled failures |
+|---|---:|---:|---:|---:|---:|
+| (10, 8, 15) | 149 | 3,125 | 88 | 0.739087 | 0 |
+| (10, 11, 12) | 149 | 3,009 | 88 | 0.717347 | 0 |
+| **(10, 12, 11)** | **149** | **2,961** | **88** | **0.717347** | **0** |
+
+This is the strongest generated direct-phase circuit in the current
+experiment. [Native kickmix logs](https://github.com/ssp2195/Kaggle_Quantum_Computing/actions/runs/42628635243).
+The full 200,540,928-trajectory scoring job is separately tracked at
+[best candidate verifier](https://github.com/ssp2195/Kaggle_Quantum_Computing/actions/runs/42629669231).
+Until that full run returns PASS, the table gives *native resource counts*,
+not a final verified score.
+
+### Why 30x is still a different research problem
+
+The desired Benchmark I cost is 2,076,880 / 30 ≈ **69,229**.
+The best current circuit has a **hard cost floor**
+`Q * Toffoli_like = 149 * 2961 = 441,189`, even if all
+arbitrary rotations were free. This is over six times above the
+30×-improvement target. At Q=149, a 30× improvement requires fewer than
+465 Toffoli-equivalent operations, including every synthesized rotation;
+that cannot arise by coefficient tuning or modest product truncation.
+
+The next high-risk research direction must therefore fundamentally
+replace the multiplier/QROM work with a much cheaper diagonal-phase
+representation. The present phase-arithmetic architecture has been
+optimized materially, but does **not** meet the 30× objective.
