@@ -74,7 +74,7 @@ def _partial_product_update(builder, source, multiplier, dest, drop, *, subtract
 
     The destination must not alias source or multiplier. The max high
     column is included in dest; final extra row bit handles ripple carry.
-    For undo, call again with opposite subtract and reverse=True.
+    For undo, call again with opposite subtract and reverse=True.\n    Critically update dest[start:] instead of a row-sized slice: a borrow\n    from a nonzero coefficient must propagate through all higher bits.
     """
     n, m = len(source), len(multiplier)
     if not 0 <= drop < n+m:
@@ -95,9 +95,9 @@ def _partial_product_update(builder, source, multiplier, dest, drop, *, subtract
             else:
                 builder.init_and(source[i], multiplier[j], row[i-first])
         if subtract:
-            builder.isub(row, target=dest[start:start+length])
+            builder.isub(row, target=dest[start:])
         else:
-            builder.iadd(row, target=dest[start:start+length])
+            builder.iadd(row, target=dest[start:])
         for i in reversed(range(first,n)):
             if source[i] == multiplier[j]:
                 builder.cx(source[i], row[i-first])
@@ -128,9 +128,9 @@ def _inplace_product(builder, source, multiplier, dest, drop, *,
             else:
                 builder.init_and(source[i],multiplier[j],row[i-first])
         if subtract != inverse:
-            builder.isub(row,target=dest[start:start+length])
+            builder.isub(row,target=dest[start:])
         else:
-            builder.iadd(row,target=dest[start:start+length])
+            builder.iadd(row,target=dest[start:])
         for i in reversed(range(first,n)):
             if source[i]==multiplier[j]:
                 builder.cx(source[i],row[i-first])
