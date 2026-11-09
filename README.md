@@ -25,7 +25,8 @@ serialized circuit's SHA-256. If the hash changes under a different kickmix
 release, the rebuilt binary must be reverified before being submitted.
 
 Evidence: [full verification PASS](https://github.com/ssp2195/Kaggle_Quantum_Computing/actions/runs/42657329801).
-See [XAG / Horner / measurement cleanup research](results/xag_horner_mbuc_20261109.md)
+See [measurement during computation: native tests and cost limits](results/measurement_during_computation.md),
+[XAG / Horner / measurement cleanup research](results/xag_horner_mbuc_20261109.md)
 and [architecture comparison](results/architecture_comparison_20261109.md).
 
 The real Kaggle leaderboard still needs an actual new submission.
