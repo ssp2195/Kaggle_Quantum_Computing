@@ -28,7 +28,7 @@ class LinearConfig:
             raise ValueError("segment bits must be 8..12")
         if not 24 <= self.precision <= 32:
             raise ValueError("fractional precision must be 24..32")
-        if not 0 <= self.linear_drop < self.low_bits:
+        if not 0 <= self.linear_drop <= self.low_bits:
             raise ValueError("invalid linear partial-product cutoff")
 
 
