@@ -1,0 +1,53 @@
+name: benchmark-1-priority1-candidate-comparison
+on:
+  push:
+    branches: [benchmark-1]
+    paths:
+      - 'src/priority1_*.py'
+      - 'tests/test_priority1_*.py'
+      - '.github/workflows/benchmark1-priority1.yml'
+  workflow_dispatch:
+jobs:
+  candidates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {family: chebyshev, degree: 2, segment: 6, precision: 26}
+          - {family: chebyshev, degree: 2, segment: 7, precision: 26}
+          - {family: chebyshev, degree: 3, segment: 4, precision: 26}
+          - {family: minimax, degree: 2, segment: 7, precision: 26}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy scipy pytest pybind11==2.12.0
+      - name: Install native C++20 kickmix
+        run: |
+          git clone --depth 1 https://github.com/quantumlib/Qualtran.git /tmp/Qualtran
+          python -m pip install /tmp/Qualtran/kickmix
+      - name: Exhaustive mathematical check for all candidates
+        run: python -m pytest -q tests/test_priority1_model.py
+      - name: Native 22-bit integration tests
+        run: python -m pytest -q tests/test_priority1_kickmix.py
+      - name: Build and run selected candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p runs out
+          name="${{ matrix.family }}_${{ matrix.degree }}_${{ matrix.segment }}_${{ matrix.precision }}"
+          args="--family ${{ matrix.family }} --degree ${{ matrix.degree }} --segment-bits ${{ matrix.segment }} --precision ${{ matrix.precision }}"
+          python -m src.priority1_cli screen $args --output "runs/$name-screen.json"
+          python -m src.priority1_cli build $args --output "out/$name.kmb" | tee "runs/$name-resources.json"
+          python -m src.priority1_cli verify --circuit "out/$name.kmb" --random-count 4096 --output "runs/$name-native.json"
+      - name: Upload measurements
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: priority1-${{ matrix.family }}-${{ matrix.degree }}-${{ matrix.segment }}-${{ matrix.precision }}
+          path: |
+            runs/
+            out/*.kmb
