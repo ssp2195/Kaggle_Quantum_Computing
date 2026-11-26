@@ -1,0 +1,20 @@
+{
+  "architecture": "hardware-aware p7/q26 quantized Chebyshev, joint ABC coefficient QROM with early A erase, compact normalization, native controlled adders",
+  "source_module": "src.benchmark1_best_joint_v3",
+  "status": "FULL_PINNED_MIRROR_VERIFIER_PASS",
+  "reference_cost_approx": 2076880,
+  "previous_verified_qc": 367309.6152203282,
+  "verified_qc": 302641.04424652964,
+  "improvement_factor_vs_approx_reference": 6.8625192764937255,
+  "qubits": 89,
+  "native_toffolis": 2764,
+  "t_like": 1,
+  "fine_rotations": 87,
+  "toffoli_equivalent": 3400.461171309322,
+  "verified_shots": 200540928,
+  "worst_error_over_tolerance": 0.9172047394125554,
+  "circuit_sha256": "0589741be529205d88ebe67d4d9d6a82faebb42debfaf1dcf38c0e39383d09b6",
+  "full_verifier_run": "https://github.com/ssp2195/Kaggle_Quantum_Computing/actions/runs/45833905951",
+  "official_kaggle_submission": false,
+  "ten_x_achieved": false
+}

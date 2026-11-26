@@ -1,4 +1,23 @@
-# Benchmark I — current fully verified result (2026-11-26)
+# Benchmark I — current verified 6.86× candidate (2026-11-26)
+
+The current best full pinned-mirror verified 22-bit inverse-square-root phase oracle uses hardware-aware sparse p7/q26 coefficient tables (B divisible by 4, C by 16), one joint A/B/C lookup with early A erasure, compact normalization and controlled additions.
+
+- **89 qubits, 2,764 native Toffoli-like operations, 87 fine rotations.**
+- Pinned mirror full-domain **PASS** for **200,540,928 trajectories**.
+- Effective Toffoli-equivalent cost **3400.461171309322**.
+- **Q*C = 302641.04424652964**, improvement **6.8625×** relative to the approximate Google reference 2,076,880.
+- Worst phase error / tolerance **0.9172047394125554** (PASS).
+- Exact native KMB SHA-256: `0589741be529205d88ebe67d4d9d6a82faebb42debfaf1dcf38c0e39383d09b6`.
+- **10× goal Q*C < 207,688 remains unachieved.** 30× goal remains unachieved.
+- Full independent verifier: https://github.com/ssp2195/Kaggle_Quantum_Computing/actions/runs/45833905951
+- Rebuild pin: `python -m src.benchmark1_best_joint_v3 --output out/best_joint_v3.kmb`
+- Machine-readable result: `results/benchmark1_best_verified_v3.json`
+
+This is a pinned public competition-verifier **mirror**, not an official Kaggle submission. The previous verified 5.65× implementation remains below for exact regression.
+
+---
+
+# Historical: previous fully verified 5.65× result (2026-11-26)
 
 The current best reproducible circuit uses **one joint A/B/C coefficient lookup**
 and early measurement-corrected erasure of the consumed A bits. It retains

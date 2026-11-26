@@ -3,7 +3,7 @@ from src.benchmark1_cost_gate import MEASURED, TARGET_QC, CURRENT_VERIFIED_QC
 
 def test_target_and_verified_thresholds():
     assert 69_000 < TARGET_QC < 70_000
-    assert 367_000 < CURRENT_VERIFIED_QC < 368_000
+    assert 302_000 < CURRENT_VERIFIED_QC < 303_000
 
 def test_all_new_variants_rejected_by_30x_floor():
     for candidate in MEASURED:
