@@ -1,0 +1,48 @@
+name: benchmark1-delete-other-branches
+on:
+  push:
+    branches:
+      - benchmark-1
+    paths:
+      - .github/workflows/benchmark1-delete-other-branches.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  prune:
+    if: github.ref == 'refs/heads/benchmark-1'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Confirm both keeper branches exist
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api "repos/$GITHUB_REPOSITORY/branches/main" --jq .name | grep -x main
+          gh api "repos/$GITHUB_REPOSITORY/branches/benchmark-1" --jq .name | grep -x benchmark-1
+      - name: Delete only non-main and non-benchmark-1 branches
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mapfile -t branches < <(
+            gh api --method GET --paginate --jq '.[].name'               "repos/$GITHUB_REPOSITORY/branches?per_page=100"
+          )
+          failed=0
+          for b in "${branches[@]}"; do
+            case "$b" in
+              main|benchmark-1)
+                echo "KEEP: $b"
+                continue
+                ;;
+            esac
+            echo "DELETE: $b"
+            if ! gh api --method DELETE                 "repos/$GITHUB_REPOSITORY/git/refs/heads/$b" >/dev/null; then
+              echo "FAILED TO DELETE: $b"
+              failed=1
+            fi
+          done
+          echo "Remaining branches:"
+          gh api --method GET --paginate --jq '.[].name'             "repos/$GITHUB_REPOSITORY/branches?per_page=100" | sort | tee /tmp/remaining.txt
+          diff -u <(printf 'benchmark-1\nmain\n') /tmp/remaining.txt || failed=1
+          exit "$failed"

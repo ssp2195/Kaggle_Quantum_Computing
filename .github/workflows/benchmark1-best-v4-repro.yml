@@ -1,0 +1,38 @@
+name: benchmark1-verified-best-v4-repro
+on:
+  push:
+    branches: [benchmark-1]
+    paths:
+      - src/benchmark1_cost_cooptim.py
+      - src/benchmark1_best_verified_v4.py
+      - tests/test_benchmark1_best_v4.py
+      - .github/workflows/benchmark1-best-v4-repro.yml
+  workflow_dispatch:
+jobs:
+  exact-rebuild:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: python -m pip install numpy scipy pytest pybind11==2.12.0
+      - run: |
+          git clone https://github.com/quantumlib/Qualtran.git /tmp/Qualtran
+          git -C /tmp/Qualtran checkout 9a0c11a4ee7697c082fbf8f2e1e8bf4a71fcb453
+          python -m pip install /tmp/Qualtran/kickmix
+      - name: Exact KMB/native-coherence and resource-regression tests
+        run: |
+          set -euo pipefail
+          OPENBLAS_NUM_THREADS=1 python -m pytest -q tests/test_benchmark1_best_v4.py tests/test_benchmark1_cost_gate.py
+      - name: Pinned v4 circuit build
+        run: |
+          set -euo pipefail
+          OPENBLAS_NUM_THREADS=1 python -m src.benchmark1_best_verified_v4 --output out/best_verified_v4.kmb | tee verified_v4_rebuild.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: benchmark1-best-v4-exact-kmb
+          path: |
+            verified_v4_rebuild.json
+            out/*.kmb

@@ -1,0 +1,22 @@
+{
+  "architecture": "Cost-aware integer coefficient refit jointly with exact omitted-column partial products (p7/q26), cuts (10,13,12), compressed B mod 4 / C mod 16, one joint ABC QROM, early A erase, swapped quadratic controlled additions",
+  "source_module": "src.benchmark1_best_verified_v4",
+  "status": "FULL_PINNED_MIRROR_VERIFIER_PASS",
+  "reference_cost_approx": 2076880,
+  "previous_verified_qc": 302641.04424652964,
+  "verified_qc": 283167.97477128694,
+  "improvement_factor_vs_approx_reference": 7.334445223466684,
+  "qubits": 86,
+  "native_toffolis": 2652,
+  "t_like": 1,
+  "fine_rotations": 86,
+  "toffoli_equivalent": 3292.650869433569,
+  "verified_shots": 200540928,
+  "worst_error_over_tolerance": 0.9687625254666724,
+  "worst_x": 244524,
+  "circuit_sha256": "0ab11da9ee2ff0b996cdd9bbc89eb1716d2c88bd1f1d934dab3695f7d566ed30",
+  "full_verifier_run": "https://github.com/ssp2195/Kaggle_Quantum_Computing/actions/runs/45857957278",
+  "official_kaggle_submission": false,
+  "ten_x_achieved": false,
+  "thirty_x_achieved": false
+}

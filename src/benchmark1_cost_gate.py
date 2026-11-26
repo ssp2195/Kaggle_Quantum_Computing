@@ -12,7 +12,7 @@ import json
 GOOGLE_REFERENCE_COST = 2_076_880.0
 TARGET_IMPROVEMENT = 30.0
 TARGET_QC = GOOGLE_REFERENCE_COST / TARGET_IMPROVEMENT
-CURRENT_VERIFIED_QC = 302_641.04424652964
+CURRENT_VERIFIED_QC = 283_167.97477128694
 
 
 @dataclass(frozen=True)
@@ -49,6 +49,7 @@ MEASURED = [
     Candidate("compact-mbuc-verified", 112, 3218, 88, True),
     Candidate("single-lookup-cut13-full-verified", 112, 2658, 88, True),
     Candidate("sparse-one-lookup-early-A-controlled-full-verified", 89, 2764, 87, True),
+    Candidate("cost-aware-refitted-p7-sq13-swapped-full-verified", 86, 2652, 86, True),
 ]
 
 

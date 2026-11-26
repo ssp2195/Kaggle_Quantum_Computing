@@ -1,4 +1,23 @@
-# Benchmark I — current verified 6.86× candidate (2026-11-26)
+# Benchmark I — current best fully verified 7.33× circuit (2026-11-26)
+
+This design optimizes **integer coefficients and omitted product columns jointly**, rather than fitting continuous Chebyshev coefficients and truncating afterward. It retains one joint A/B/C lookup, early measurement-corrected A erasure, compact normalization, and uses the lower-cost quadratic multiplier operand orientation.
+
+- **86 qubits, 2,652 native Toffoli-like gates, 86 fine Z_POW rotations.**
+- Full pinned independent competition-verifier mirror: **PASS**, **200,540,928** trajectories across **3,133,452** inputs.
+- Actual effective non-Clifford gate cost **3,292.650869433569**.
+- Verified **Q*C = 283167.97477128694**, **7.334445×** improvement over the approximate Google reference Q*C=2,076,880.
+- Worst phase error/tolerance: **0.9687625254666724**, at x=244524.
+- Native KMB SHA-256: `0ab11da9ee2ff0b996cdd9bbc89eb1716d2c88bd1f1d934dab3695f7d566ed30`.
+- Full verifier evidence: https://github.com/ssp2195/Kaggle_Quantum_Computing/actions/runs/45857957278
+- Exact source + hash-checked reproducibility builder: `python -m src.benchmark1_best_verified_v4 --output out/best_verified_v4.kmb`
+- Machine-readable result: `results/benchmark1_best_verified_v4.json`
+- **More than 10× (Q*C <207688) has not been achieved**; 30× also remains open.
+
+The result is from a pinned **public mirror verifier**, not a new official Kaggle leaderboard submission. Previous full-PASS 6.86× and 5.65× builders remain in the repository for regressions.
+
+---
+
+# Historical: previous fully verified 6.86× circuit (2026-11-26)
 
 The current best full pinned-mirror verified 22-bit inverse-square-root phase oracle uses hardware-aware sparse p7/q26 coefficient tables (B divisible by 4, C by 16), one joint A/B/C lookup with early A erasure, compact normalization and controlled additions.
 
