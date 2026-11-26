@@ -1,8 +1,41 @@
-# Benchmark I — best fully verified kickmix implementation
+# Benchmark I — current fully verified result (2026-11-26)
+
+The current best reproducible circuit uses **one joint A/B/C coefficient lookup**
+and early measurement-corrected erasure of the consumed A bits. It retains
+p7/q26 Chebyshev quadratic phasing with exact cut settings **(10,13,10)**
+and compact normalization.
+
+- **112 qubits; 2,658 Toffoli-like operations; 88 fine rotations**
+- Full pinned mirror-verifier **PASS** on **200,540,928 trajectories**
+- **Q*C = 367,309.6152203282**, approximately **5.65×** better than the
+  Google reference (~2,076,880).
+- Exact KMB SHA-256:
+  `1726e2a438e4296590210c2422004ed1feda9153c09f28a9edc31dce930e0be6`
+- **10× objective (Q*C <= 207,688) not yet achieved.**
+- **30× objective (Q*C <= 69,229.33) not yet achieved.**
+
+Build the pinned circuit with:
+```bash
+python -m src.benchmark1_single_lookup_verified --output out/best_invsqrt_v2.kmb
+```
+
+The builder rejects any byte-level mismatch against the verified KMB.
+[Full verifier PASS](https://github.com/ssp2195/Kaggle_Quantum_Computing/actions/runs/45828484630) ·
+[Independent exact-hash rebuild](https://github.com/ssp2195/Kaggle_Quantum_Computing/actions/runs/45831536475) ·
+[Machine-readable results](results/benchmark1_best_verified_v2.json).
+
+This is independent mirror verification, **not a new official Kaggle
+leaderboard submission**. The previously verified 4.83× builder remains
+available at `src/benchmark1_best.py` for regression and comparison.
+
+---
+
+## Historical reference — previous fully verified 4.83× circuit
+
 
 **Active branch:** `benchmark-1`.
 
-**Best fully verified circuit:** grouped Chebyshev quadratic 7/26,
+**Previously best fully verified circuit:** grouped Chebyshev quadratic 7/26,
 cut settings `(10,12,11)`, coefficient grouping **A then BC**,
 with **compact measurement-corrected barrel normalization**.
 Uses **112 qubits**, **3,218 Toffoli-like operations**, and
