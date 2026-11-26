@@ -1,0 +1,32 @@
+name: benchmark1-verified-single-lookup-repro
+on:
+  push:
+    branches: [benchmark-1]
+    paths:
+      - src/benchmark1_single_lookup_verified.py
+      - tests/test_benchmark1_best_v2.py
+      - .github/workflows/benchmark1-verified-single-lookup-repro.yml
+  workflow_dispatch:
+jobs:
+  exact-rebuild:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy scipy pytest pybind11==2.12.0
+      - run: |
+          git clone https://github.com/quantumlib/Qualtran.git /tmp/Qualtran
+          git -C /tmp/Qualtran checkout 9a0c11a4ee7697c082fbf8f2e1e8bf4a71fcb453
+          python -m pip install /tmp/Qualtran/kickmix
+      - run: python -m pytest -q tests/test_benchmark1_best_v2.py
+      - run: python -m src.benchmark1_single_lookup_verified --output out/verified_v2.kmb | tee verified_v2_rebuild.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: benchmark1-verified-single-lookup-rebuild
+          path: |
+            verified_v2_rebuild.json
+            out/*.kmb
