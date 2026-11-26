@@ -1,0 +1,22 @@
+{
+  "architecture": "p7/q26 Chebyshev quadratic, one joint A/B/C QROM, early measurement-corrected A erase, exact dropped columns 10/13/10",
+  "source_module": "src.benchmark1_single_lookup_verified",
+  "status": "FULL_PINNED_MIRROR_VERIFIER_PASS",
+  "reference_cost_approx": 2076880,
+  "previous_verified_qc": 430259.61862786254,
+  "verified_qc": 367309.6152203282,
+  "improvement_factor_vs_approx_reference": 5.654303383139582,
+  "qubits": 112,
+  "native_toffolis": 2658,
+  "t_like": 1,
+  "fine_rotations": 88,
+  "toffoli_equivalent": 3279.5501358957877,
+  "verified_shots": 200540928,
+  "worst_error_over_tolerance": 0.7084017145234968,
+  "worst_x": 943997,
+  "circuit_sha256": "1726e2a438e4296590210c2422004ed1feda9153c09f28a9edc31dce930e0be6",
+  "full_verifier_run": "https://github.com/ssp2195/Kaggle_Quantum_Computing/actions/runs/45828484630",
+  "independent_pinned_rebuild_run": "https://github.com/ssp2195/Kaggle_Quantum_Computing/actions/runs/45831536475",
+  "official_kaggle_submission": false,
+  "ten_x_achieved": false
+}
