@@ -56,15 +56,17 @@ def square_split(b,r,square,drop,inverse=False):
         square_symmetric_rows(b,H,square,1,inverse=True)
 
 def build():
-    assert certificate()["passes"]
-    old=rom._mul_cut
-    def wrapped(b,a,bits,dest,drop,inverse=False):
-        if len(a)==13 and len(bits)==13 and all(q==p for q,p in zip(a,bits)):
-            return square_split(b,a,dest,drop,inverse)
-        return old(b,a,bits,dest,drop,inverse)
-    rom._mul_cut=wrapped
+    if not certificate()["passes"]:raise RuntimeError("Split certificate failed")
+    # The existing v8 constructor installs its own outer _mul_cut wrapper,
+    # so patch the *inner symmetric-square routine* that wrapper invokes.
+    # Keep the original n<13 routine to compute H² without recursion.
+    from . import benchmark1_symmetric_square_rows_v7 as rows
+    original=rows.square_symmetric_rows
+    def patched(b,r,dest,drop,inverse=False):
+        return square_split(b,r,dest,drop,inverse)
+    rows.square_symmetric_rows=patched
     try:c=original_build()
-    finally:rom._mul_cut=old
+    finally:rows.square_symmetric_rows=original
     return c
 
 def main():
