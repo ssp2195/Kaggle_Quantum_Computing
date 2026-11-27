@@ -23,7 +23,8 @@ SHAPES={'linear':(16,13),'quad':(13,7)}
 CASES=('baseline','no_intercept_phase','no_linear_phase',
        'no_quadratic_phase','no_all_phases',
        'no_linear_multiply','no_quadratic_multiply',
-       'no_square','no_all_arithmetic','no_anf_rom')
+       'no_square','no_all_arithmetic','no_anf_rom',
+       'only_ROM','only_intercept','only_linear','only_quadratic')
 
 def build(case):
     if case not in CASES:raise ValueError(case)
@@ -34,18 +35,18 @@ def build(case):
     phase_calls=[0]
     def phase_fn(b,word,shift,frac,sign,pad):
         n=phase_calls[0];phase_calls[0]+=1
-        if case in ('no_all_phases','no_all_arithmetic'):return
-        if case=='no_intercept_phase' and n==0:return
-        if case=='no_linear_phase' and n==1:return
-        if case=='no_quadratic_phase' and n==2:return
+        if case in ('no_all_phases','no_all_arithmetic','only_ROM'):return
+        if case in ('no_intercept_phase','only_linear','only_quadratic') and n==0:return
+        if case in ('no_linear_phase','only_intercept','only_quadratic') and n==1:return
+        if case in ('no_quadratic_phase','only_intercept','only_linear') and n==2:return
         return original_p(b,word,shift,frac,sign,pad)
     def mul_fn(b,a,other,dest,drop,inverse=False):
-        if case in ('no_all_arithmetic',):return
-        if case=='no_linear_multiply' and (len(a),len(other))==SHAPES['linear']:return
-        if case=='no_quadratic_multiply' and (len(a),len(other))==SHAPES['quad']:return
+        if case in ('no_all_arithmetic','only_ROM'):return
+        if case in ('no_linear_multiply','only_intercept','only_quadratic') and (len(a),len(other))==SHAPES['linear']:return
+        if case in ('no_quadratic_multiply','only_intercept','only_linear') and (len(a),len(other))==SHAPES['quad']:return
         return original_m(b,a,other,dest,drop,inverse)
     def sq_fn(b,r,dest,drop,inverse=False):
-        if case in ('no_square','no_all_arithmetic'):return
+        if case in ('no_square','no_all_arithmetic','only_ROM','only_intercept','only_linear'):return
         return original_s(b,r,dest,drop,inverse)
     def decoder(b,addr,word,table):
         if case=='no_anf_rom':return
