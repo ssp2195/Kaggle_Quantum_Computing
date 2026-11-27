@@ -69,6 +69,19 @@ def optimize():
         eps=math.pi*margin/r
         return 85*(2232+(1+r*(.56*math.log2(1/eps)+5.3))/4)
     original_predicted_qc=estimate_qc(76,original_margin)
+    absolute_slack=(1-np.abs(err))*tol
+    worst_idx=np.argpartition(absolute_slack,20)[:20]
+    worst_idx=worst_idx[np.argsort(absolute_slack[worst_idx])]
+    critical=[]
+    for idx in worst_idx:
+        x=int(idx)+1
+        s=10-(x.bit_length()-1)//2
+        normalized=x<<(2*s)
+        critical.append(dict(x=x,interval=normalized>>13,
+              residual=normalized&8191,
+              error_ratio=float(err[idx]),
+              absolute_margin=float(absolute_slack[idx])))
+    print("ORIGINAL_CRITICAL_INPUTS "+json.dumps(critical),flush=True)
     print(json.dumps(dict(phase_model="original cyclic-fixed-point native v9",
        checked=MAX,baseline_worst_error_ratio=base_worst,
        original_absolute_min_margin_turns=original_margin,
