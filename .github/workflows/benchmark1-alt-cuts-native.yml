@@ -1,4 +1,5 @@
 name: benchmark1-original-exact-cut-native-cooptimization
+# Correct original shared coefficient monkeypatch in new-cut candidate
 on:
   push:
     branches: [bench1-architecture-redesign-20261127]
