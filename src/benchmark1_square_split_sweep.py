@@ -59,14 +59,15 @@ def square_split(b, r, dest, drop, k=6, inverse=False):
 def make(k):
     if not math_certificate(k)["passes"]:
         raise RuntimeError("Algebraic split certificate failed")
-    original=rom._mul_cut
-    def patched(b,a,a2,dest,drop,inverse=False):
-        if len(a)==13 and len(a2)==13 and all(u==v for u,v in zip(a,a2)):
-            return square_split(b,a,dest,drop,k,inverse)
-        return original(b,a,a2,dest,drop,inverse)
-    rom._mul_cut=patched
+    # The original v8 builder overrides rom._mul_cut. Patch the actual
+    # symmetric square function called *inside* that override instead.
+    from . import benchmark1_symmetric_square_rows_v7 as rows
+    original=rows.square_symmetric_rows
+    def patched(b,r,dest,drop,inverse=False):
+        return square_split(b,r,dest,drop,k,inverse)
+    rows.square_symmetric_rows=patched
     try:c=v8_build()
-    finally:rom._mul_cut=original
+    finally:rows.square_symmetric_rows=original
     return c
 
 def main():
