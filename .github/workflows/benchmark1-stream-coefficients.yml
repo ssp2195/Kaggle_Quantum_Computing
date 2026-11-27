@@ -1,4 +1,5 @@
 name: benchmark1-original-coefficient-streaming-qubit-lifetimes
+# Re-run three independent coefficient lifetimes with 1-bit clean B unlookup helper
 on:
   push:
     branches: [bench1-architecture-redesign-20261127]
@@ -22,7 +23,7 @@ jobs:
         run: |
           mkdir -p runs
           set -o pipefail
-          OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m src.benchmark1_stream_coefficients --samples 256 | tee runs/streaming-native.log
+          OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m src.benchmark1_stream_coefficients --variants split-anf-qrom split-qrom-qrom split-anf-anf --samples 256 | tee runs/streaming-native.log
       - uses: actions/upload-artifact@v4
         if: always()
         with:
