@@ -1,4 +1,5 @@
 name: benchmark1-architecture-stage-cost-profile
+# Detailed nested tag classification by semantic phase stage
 on:
   push:
     branches: [bench1-architecture-redesign-20261127]
