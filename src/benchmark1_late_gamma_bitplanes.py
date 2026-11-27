@@ -136,7 +136,14 @@ def build(late=2,erase_b=True,pad8=True):
             apply_threshold_segments(q,info['segments'])
             b.free(q)
         if erase_b:
-            b.del_lookup(table=tClow,address=addr,target=gamma_low)
+            # Native measured unlookup requires a minimum target width
+            # for its address-unary work register. Append CLEAN zero
+            # target bits while all other arithmetic has been freed.
+            pad=b.alloc_qubits(max(0,16-len(gamma_low)))
+            b.reset(pad)
+            union=km.array(list(gamma_low)+list(pad))
+            b.del_lookup(table=tClow,address=addr,target=union)
+            b.free(pad)
             b.free(gamma_low)
         else:
             b.del_lookup(table=tBClow,address=addr,target=reg[wa:])
