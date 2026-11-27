@@ -1,4 +1,5 @@
 name: benchmark1-original-operand-orientation-v9
+# True 17x13 and 13x7 operand-swap test; previous shape guards were inert
 on:
   push:
     branches: [bench1-architecture-redesign-20261127]
