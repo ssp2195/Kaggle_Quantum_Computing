@@ -18,7 +18,7 @@ native circuit must pass the full pinned 200,540,928-trajectory verifier
 and improve actual QxC before production promotion.
 """
 from __future__ import annotations
-import argparse,json
+import argparse,json,math
 from pathlib import Path
 import numpy as np
 from .benchmark1_phase_support_prune import support_cert
@@ -64,8 +64,15 @@ def data_full_domain(chunk=200000):
 def optimize():
     out,err,tol,widths=data_full_domain()
     base_worst=float(np.max(np.abs(err)))
+    original_margin=float(np.min((1-np.abs(err))*tol))
+    def estimate_qc(r,margin):
+        eps=math.pi*margin/r
+        return 85*(2232+(1+r*(.56*math.log2(1/eps)+5.3))/4)
+    original_predicted_qc=estimate_qc(76,original_margin)
     print(json.dumps(dict(phase_model="original cyclic-fixed-point native v9",
        checked=MAX,baseline_worst_error_ratio=base_worst,
+       original_absolute_min_margin_turns=original_margin,
+       original_predicted_qc=original_predicted_qc,
        widths=widths)),flush=True)
     deleted=[]
     positions=[(t,j) for t,w in enumerate(widths) for j in range(w)]
@@ -94,7 +101,21 @@ def optimize():
             cumulative_deleted=len(deleted),
             worst_error_ratio=newworst)),flush=True)
         if len(deleted)>=20:break
+    new_margin=float(np.min((1-np.abs(err))*tol))
+    # A skipped gate is a fine Z rotation only if its exponent is not
+    # Clifford (integer quarter turns are modeled separately).
+    fine_removed=sum(1 for stage,j in deleted
+                     if 0<2.0**(j-DENS[stage])%0.25)
+    new_rotations=76-fine_removed
+    new_predicted_qc=estimate_qc(new_rotations,new_margin)
     return dict(legal_inputs=MAX,baseline_model=base_worst if not deleted else None,
+        original_min_margin_turns=original_margin,
+        final_min_margin_turns=new_margin,
+        previous_verified_qc=237684.49222389946,
+        previous_predicted_qc=original_predicted_qc,
+        new_predicted_qc=new_predicted_qc,
+        predicted_improvement=new_predicted_qc<237684.49222389946,
+        new_rotations=new_rotations,
         deleted_phase_bits=[list(t) for t in deleted],
         deleted_count=len(deleted),
         final_worst_error_ratio=base_worst,
