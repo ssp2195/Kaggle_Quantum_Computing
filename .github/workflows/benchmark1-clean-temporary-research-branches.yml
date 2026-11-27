@@ -1,0 +1,23 @@
+name: benchmark1-clean-temporary-research-branches
+on:
+  push:
+    branches: [benchmark-1]
+    paths: ['.github/workflows/benchmark1-clean-temporary-research-branches.yml']
+  workflow_dispatch:
+jobs:
+  clean:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Remove only disposable experiment refs after v5 source promotion
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          for name in bench1-cap-experiment-20261127 bench1-zero-residual-pad-experiment; do
+            gh api -X DELETE "repos/$REPO/git/refs/heads/$name"
+            echo "Deleted disposable branch $name"
+          done
+          echo "Retained main and benchmark-1"
