@@ -1,4 +1,20 @@
-# Benchmark I — current best fully verified 8.098× circuit (2026-11-27)
+# Benchmark 1 — current best independently verified 8.60× circuit (2026-11-27)
+
+The v8 quantum oracle combines three original optimizations: (1) four-stage reversible base-four normalization using four binary shift flags rather than arithmetic incrementing, (2) a don’t-care-aware, multioutput GF(2) ANF lookup over 384 reachable normalized intervals that cancels top-order Boolean interactions by choosing the 128 unused ROM rows, and (3) exact truncated **symmetric squares grouped into carry-safe rows** with measurement-assisted cleanup, rather than one controlled increment for every product bit. The intercept phase also removes one high zero padding qubit using an exact whole-phase-turn identity.
+
+**Full independent competition-verifier mirror PASS**: 3,133,452 valid inputs × 64 = **200,540,928 coherent trajectories**, including scratch restoration. Native cost **85 qubits, 2,276 Toffoli-like operations, 76 fine rotations**; rotation-inclusive **Q×C = 241,424.49222389946**, about **8.600532×** reference improvement (reference cost ≈ 2,076,880). Worst phase-error/tolerance **0.9687625254666724** at x=244524.
+
+- Full verifier evidence: https://github.com/ssp2195/Kaggle_Quantum_Computing/actions/runs/46017040842
+- Compile exact bytes: `python -m src.benchmark1_best_verified_v8 --output out/best_verified_v8.kmb`
+- Pinned KMB SHA-256: `dd3361737c5292f4eecf90ae79837659b3b434ff6beae589268d5b32a28ab774`.
+- Certificate: `results/benchmark1_best_verified_v8.json`.
+- Repro regression: `tests/test_benchmark1_best_v8.py`.
+- All v7, v6 and v5 builders remain as reproduced fallback implementations.
+- **20× is not achieved**; exact reference threshold is Q×C ≤103,844, requiring a further reduction of more than 56%. These are pinned public-verifier results, *not official Kaggle submissions*.
+
+---
+
+# Historical — independently verified 8.098× circuit (2026-11-27)
 
 The v7 compiler is an **independently authored, don’t-care-aware multioutput Boolean ROM synthesizer**. The base-four-normalized mantissa interval address has 512 encodings, but only 384 are reachable. The 128 unreachable encodings can therefore be assigned arbitrary table values without altering any valid input’s phase. Our reversible ANF decoder assigns these unused entries using the bitwise **XOR extension** `f00=f01 XOR f10 XOR f11`, cancelling the complete highest-order interaction of the two top address bits. It avoids **128 shared nonlinear AND-prefix computations** while preserving every reachable A/B/C coefficient, the original measurement-corrected cleanup, the exact five-qubit residual phase padding and the independently verified four-stage binary normalizer.
 
