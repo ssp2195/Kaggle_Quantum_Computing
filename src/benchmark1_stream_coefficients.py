@@ -95,8 +95,13 @@ def build(mode="split",first="anf",other="qrom"):
             erase(tbc,bc)
     else:
         with builder.mark("linear_coefficient_lifetime"):
-            b=load(tb,wb,other)
-            linear(b)
+            # Native gen_unlookup splits the nine address bits into
+            # four low address bits and requires at least 12 target bits
+            # (16 unary wires minus four borrowed address wires).
+            # A single clean dummy high bit is logically and physically 0;
+            # it is needed only by the measured unlookup machinery.
+            b=load(tb,max(wb,12),other)
+            linear(b[:wb])
             erase(tb,b)
         with builder.mark("quadratic_coefficient_lifetime"):
             c=load(tc,wc,other)
