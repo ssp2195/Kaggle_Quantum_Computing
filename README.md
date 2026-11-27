@@ -1,4 +1,20 @@
-# Benchmark 1 — current best independently verified 8.60× circuit (2026-11-27)
+# Benchmark 1 — best independently verified 8.737970× circuit (2026-11-27)
+
+**Current v9 winner:** 85 qubits, 2,232 native Toffoli-like operations, 76 fine rotations. Rotation-inclusive **Q×C = 237,684.49222389946**, giving **8.737970×** improvement over reference Q×C≈2,076,880. The original v9 compiler combines (i) a four-stage reversible base-four normalizer; (ii) a 384-reachable-row, don't-care-optimized GF(2) multioutput Boolean coefficient decoder; (iii) a quadratic partial-product square whose cross terms are grouped into carry-safe rows; (iv) a shortened intercept-phase register based on exact whole-turn phase cancellation; and (v) **a carry-free first partial-product row on both linear/quadratic coefficient multipliers and the symmetric square**, while maintaining the exact proven row order for all subsequent carry-propagating additions and inverses.
+
+**Full independent pinned public verifier: PASS** across **3,133,452 valid inputs × 64 = 200,540,928 coherent trajectories**, including input restoration and all quantum workspace zeroing. Worst phase-error/tolerance ratio remains **0.9687625254666724**, at x=244524.
+
+- SHA-256 KMB: `cb6c18f085c0c051cfa03856414c3f43037ad7abf8703a0a1be51ba4c44ac66c`.
+- Rebuild exact bytes: `python -m src.benchmark1_best_verified_v9 --output out/best_verified_v9.kmb`.
+- Full verifier: https://github.com/ssp2195/Kaggle_Quantum_Computing/actions/runs/46021681763
+- Exact v9 provenance: `results/benchmark1_best_verified_v9.json`; regression: `tests/test_benchmark1_best_v9.py`.
+- v8, v7, v6 and v5 are preserved as fully independently verified fallbacks.
+
+**The target of ≥20× is not achieved.** The verified v9 Q×C is 237,684.49 while ≥20× requires ≤103,844. Results are from the pinned public independent verifier mirror, *not an official Kaggle leaderboard submission*.
+
+---
+
+# Historical — independently verified 8.60× circuit (2026-11-27)
 
 The v8 quantum oracle combines three original optimizations: (1) four-stage reversible base-four normalization using four binary shift flags rather than arithmetic incrementing, (2) a don’t-care-aware, multioutput GF(2) ANF lookup over 384 reachable normalized intervals that cancels top-order Boolean interactions by choosing the 128 unused ROM rows, and (3) exact truncated **symmetric squares grouped into carry-safe rows** with measurement-assisted cleanup, rather than one controlled increment for every product bit. The intercept phase also removes one high zero padding qubit using an exact whole-phase-turn identity.
 
