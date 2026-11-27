@@ -1,4 +1,22 @@
-# Benchmark I — current best fully verified 7.745× circuit (2026-11-27)
+# Benchmark I — current best fully verified 8.098× circuit (2026-11-27)
+
+The v7 compiler is an **independently authored, don’t-care-aware multioutput Boolean ROM synthesizer**. The base-four-normalized mantissa interval address has 512 encodings, but only 384 are reachable. The 128 unreachable encodings can therefore be assigned arbitrary table values without altering any valid input’s phase. Our reversible ANF decoder assigns these unused entries using the bitwise **XOR extension** `f00=f01 XOR f10 XOR f11`, cancelling the complete highest-order interaction of the two top address bits. It avoids **128 shared nonlinear AND-prefix computations** while preserving every reachable A/B/C coefficient, the original measurement-corrected cleanup, the exact five-qubit residual phase padding and the independently verified four-stage binary normalizer.
+
+- **86 qubits, 2,418 native Toffoli-like operations, 76 fine Z_POW rotations**.
+- **Full pinned independent verifier mirror: PASS** across **3,133,452 inputs × 64 = 200,540,928 coherent trajectories**, with all scratch restored.
+- Rotation-inclusive **Q×C = 256,476.78036771005**, a **8.097731× reference improvement** and **4.3614% cost reduction versus verified v6**.
+- Worst phase error/tolerance remains **0.9687625254666724**, at x=244524.
+- Exact `.kmb` SHA-256: `bd691cb587bb51d690d86b4798b1a674fbb61313fa24d02f63ba6422ff4d413a`.
+- Source: `src/benchmark1_best_verified_v7.py`, `src/benchmark1_dontcare_boolean_rom.py`, `src/benchmark1_pruned_anf_rom.py`.
+- **Rebuild:** `python -m src.benchmark1_best_verified_v7 --output out/best_verified_v7.kmb`.
+- Independent result receipt: `results/benchmark1_best_verified_v7.json`.
+- [Full pinned mirror PASS](https://github.com/ssp2195/Kaggle_Quantum_Computing/actions/runs/46014043594) · [Native decoder comparisons](https://github.com/ssp2195/Kaggle_Quantum_Computing/actions/runs/46013515647).
+
+The previous v6 and v5 builders are preserved and independently SHA-pinned. **20× remains open** (requires Q×C ≤103,844); this is **not an official Kaggle leaderboard submission**.
+
+---
+
+# Historical — previous fully verified 7.745× circuit (2026-11-27)
 
 New **original four-stage binary zero-block normalization** removes the old ten repeated binary exponent increments. The four reversible tests shift by 8, 4, 2, and 1 base-four digit pairs. The four resulting coherent flags directly form the phase exponent; uncomputation reverses the block rotations and uses measurement-conditioned Clifford correction while the original controls are again live. The previously verified five-qubit residual-phase padding, full-domain integer coefficient refit, and p7/q26 arithmetic are preserved.
 
