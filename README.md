@@ -2,7 +2,7 @@
 
 The v8 quantum oracle combines three original optimizations: (1) four-stage reversible base-four normalization using four binary shift flags rather than arithmetic incrementing, (2) a don’t-care-aware, multioutput GF(2) ANF lookup over 384 reachable normalized intervals that cancels top-order Boolean interactions by choosing the 128 unused ROM rows, and (3) exact truncated **symmetric squares grouped into carry-safe rows** with measurement-assisted cleanup, rather than one controlled increment for every product bit. The intercept phase also removes one high zero padding qubit using an exact whole-phase-turn identity.
 
-**Full independent competition-verifier mirror PASS**: 3,133,452 valid inputs × 64 = **200,540,928 coherent trajectories**, including scratch restoration. Native cost **85 qubits, 2,276 Toffoli-like operations, 76 fine rotations**; rotation-inclusive **Q×C = 241,424.49222389946**, about **8.600532×** reference improvement (reference cost ≈ 2,076,880). Worst phase-error/tolerance **0.9687625254666724** at x=244524.
+**Full independent competition-verifier mirror PASS**: 3,133,452 valid inputs × 64 = **200,540,928 coherent trajectories**, including scratch restoration. Native cost **85 qubits, 2,276 Toffoli-like operations, 76 fine rotations**; rotation-inclusive **Q×C = 241,424.49222389946**, about **8.602607×** reference improvement (reference cost ≈ 2,076,880). Worst phase-error/tolerance **0.9687625254666724** at x=244524.
 
 - Full verifier evidence: https://github.com/ssp2195/Kaggle_Quantum_Computing/actions/runs/46017040842
 - Compile exact bytes: `python -m src.benchmark1_best_verified_v8 --output out/best_verified_v8.kmb`
