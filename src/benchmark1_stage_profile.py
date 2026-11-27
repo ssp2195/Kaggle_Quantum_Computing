@@ -19,9 +19,24 @@ def profile(out=Path("runs/v5_stage_profile.json")):
         token=line.split(" ",1)[0] if line.strip() else ""
         if token=="INFO_TAG":
             notes.append(line)
-        key=" > ".join(stack) if stack else "unmarked"
+            m=re.search(r'@(?:enter|exit):[^"]+',line)
+            if m:
+                label=m.group(0)
+                if label.startswith("@enter:"):
+                    stack.append(label[len("@enter:"):])
+                elif label.startswith("@exit:"):
+                    wanted=label[len("@exit:"):]
+                    if stack and stack[-1]==wanted:
+                        stack.pop()
+                    else:
+                        raise ValueError("Unbalanced native tag: "+label)
+            continue
+        # Attribute to the top-level algorithmic mark, rather than internal
+        # kickmix lookup, adder or rotation helper marks.
+        roots=("constant_A_phase","linear_phase","quadratic_phase")
+        key=next((x for x in stack if x in roots),"unmarked")
         stage[key][token]+=1
-    result=dict(resources=resource_counts(c),info_tags=notes[:200],
+    result=dict(resources=resource_counts(c),info_tags=notes[:25],
                 num_info_tags=len(notes),
                 opcode_counts=dict(sum((Counter({k:v}) for z in stage.values() for k,v in z.items()),Counter())),
                 stage_opcode_counts={k:dict(v) for k,v in stage.items()})
