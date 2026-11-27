@@ -1,4 +1,21 @@
-# Benchmark I — current best fully verified 7.627× circuit (2026-11-27)
+# Benchmark I — current best fully verified 7.745× circuit (2026-11-27)
+
+New **original four-stage binary zero-block normalization** removes the old ten repeated binary exponent increments. The four reversible tests shift by 8, 4, 2, and 1 base-four digit pairs. The four resulting coherent flags directly form the phase exponent; uncomputation reverses the block rotations and uses measurement-conditioned Clifford correction while the original controls are again live. The previously verified five-qubit residual-phase padding, full-domain integer coefficient refit, and p7/q26 arithmetic are preserved.
+
+- **86 qubits, 2,554 Toffoli-like operations, 76 fine rotations.**
+- Full pinned independent competition verifier mirror: **PASS, 200,540,928 trajectories** (3,133,452 valid inputs × 64).
+- Rotation-inclusive **Q×C = 268,172.78036771005**, approximately **7.744559×** improvement over Google's approximate reference Q×C = 2,076,880; **1.516% lower** Q×C than v5 (272,300.78036771005).
+- Same phase-error/tolerance maximum **0.9687625254666724** at x=244524.
+- Native KMB SHA-256 `1807c84b9f93008de4ebde2c2231aa8d5f08386dc03e10b63b47999c4577011d`.
+- Rebuild with `python -m src.benchmark1_best_verified_v6 --output out/best_verified_v6.kmb`.
+- Proof and reproducibility receipt: `results/benchmark1_best_verified_v6.json`.
+- [Full pinned verifier PASS](https://github.com/ssp2195/Kaggle_Quantum_Computing/actions/runs/46008864751).
+
+The previous full-verified v5 source remains untouched and exact-SHA reproducible. **20× is not yet achieved**; the necessary total cost is at most 103,844. This is *not* an official Kaggle leaderboard submission.
+
+---
+
+# Historical — previous fully verified 7.627× circuit (2026-11-27)
 
 This **independently developed exact phase-padding reduction** uses the original hardware-aware, integer-refitted piecewise-quadratic oracle but eliminates unused padding and corresponding gates from its two residual-dependent variable rotations. Across every legal input, the linear and quadratic phase word each require exactly **five** high-zero padding qubits to avoid wraparound; the constant-phase word retains ten. The original phase scale and arithmetic approximation are unchanged.
 
