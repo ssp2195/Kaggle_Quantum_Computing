@@ -20,10 +20,15 @@ REF=2076880.;V8=241424.49222389946
 
 def build(swap_linear=False,swap_quad=False):
     old=f.mul_first_row
+    from .benchmark1_cost_cooptim import coefficients,BZ,CZ
+    mat=coefficients((10,13,12))
+    bw=max(1,int((mat[:,1]>>BZ).max()).bit_length())
+    cw=max(1,int((mat[:,2]>>CZ).max()).bit_length())
+    if bw==cw:raise RuntimeError("Ambiguous product shape")
     def orient(b,a,other,dest,drop,inverse=False):
-        if (len(a),len(other))==(11,13) and swap_linear:
+        if (len(a),len(other))==(bw,13) and swap_linear:
             return old(b,other,a,dest,drop,inverse)
-        if (len(a),len(other))==(13,12) and swap_quad:
+        if (len(a),len(other))==(13,cw) and swap_quad:
             return old(b,other,a,dest,drop,inverse)
         return old(b,a,other,dest,drop,inverse)
     f.mul_first_row=orient
