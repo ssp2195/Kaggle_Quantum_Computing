@@ -1,0 +1,26 @@
+name: benchmark1-architecture-stage-cost-profile
+on:
+  push:
+    branches: [bench1-architecture-redesign-20261127]
+    paths: ['.github/workflows/benchmark1-architecture-stage-profile.yml']
+jobs:
+  native:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: python -m pip install numpy scipy pytest pybind11==2.12.0
+      - name: Pin Google native kickmix compiler
+        run: |
+          git clone --depth 1 https://github.com/quantumlib/Qualtran.git /tmp/Qualtran
+          git -C /tmp/Qualtran fetch --depth 1 origin 9a0c11a4ee7697c082fbf8f2e1e8bf4a71fcb453
+          git -C /tmp/Qualtran checkout 9a0c11a4ee7697c082fbf8f2e1e8bf4a71fcb453
+          python -m pip install /tmp/Qualtran/kickmix
+      - run: OPENBLAS_NUM_THREADS=1 python -m src.benchmark1_stage_profile
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: benchmark1-full-native-stage-profile
+          path: runs/*.json
