@@ -61,7 +61,7 @@ def bitplane_certificate(late):
          full_curvature_width=wc,
          late_bitplane_segments=report)
 
-def build(late=2,erase_b=True,pad8=True):
+def build(late=2,erase_b=True,pad8=True,shared_thresholds=False):
     assert bitplane_certificate(late)["passes"]
     import kickmix as km
     mat,_=optimized_coefficients('affine')
@@ -114,12 +114,25 @@ def build(late=2,erase_b=True,pad8=True):
                 b.flip_if_less_than(addr,hi+1,target=target)
             elif lo==128:
                 b.x(target)
+    # For every physically reachable interval, C6=[j<151] and
+    # C5=[j<200] XOR C6. This reuses the already-synthesized C6 flag
+    # and replaces two full-width threshold comparator calls by CX.
+    shared=(shared_thresholds and late>=2 and
+         segments[-2]['bit']==5 and segments[-2]['segments']==[[151,199]] and
+         segments[-1]['bit']==6 and segments[-1]['segments']==[[128,150]])
     with b.mark('late_curvature_decode'):
         for info in segments:
-            q=b.alloc_qubits(1)[0]
-            b.reset(q)
-            apply_threshold_segments(q,info['segments'])
-            late_qubits.append(q)
+            q=b.alloc_qubits(1)[0];b.reset(q);late_qubits.append(q)
+        if shared:
+            for info,q in list(zip(segments,late_qubits))[:-2]:
+                apply_threshold_segments(q,info['segments'])
+            q5,q6=late_qubits[-2],late_qubits[-1]
+            apply_threshold_segments(q6,segments[-1]['segments'])
+            b.flip_if_less_than(addr,200,target=q5)
+            b.cx(q6,q5)
+        else:
+            for info,q in zip(segments,late_qubits):
+                apply_threshold_segments(q,info['segments'])
     gamma=km.array(list(gamma_low)+late_qubits)
     with b.mark('quadratic'):
         sq=b.alloc_qubits(2*cc.LO-ds);b.reset(sq)
@@ -132,9 +145,17 @@ def build(late=2,erase_b=True,pad8=True):
         square_first_row(b,x[:cc.LO],sq,ds,inverse=True)
         b.free(sq)
     with b.mark('curvature_cleanup'):
-        for info,q in reversed(list(zip(segments,late_qubits))):
-            apply_threshold_segments(q,info['segments'])
-            b.free(q)
+        if shared:
+            q5,q6=late_qubits[-2],late_qubits[-1]
+            b.cx(q6,q5)
+            b.flip_if_less_than(addr,200,target=q5)
+            apply_threshold_segments(q6,segments[-1]['segments'])
+            for info,q in reversed(list(zip(segments,late_qubits))[:-2]):
+                apply_threshold_segments(q,info['segments'])
+        else:
+            for info,q in reversed(list(zip(segments,late_qubits))):
+                apply_threshold_segments(q,info['segments'])
+        for q in reversed(late_qubits):b.free(q)
         if erase_b:
             # Native measured unlookup requires a minimum target width
             # for its address-unary work register. Append CLEAN zero
@@ -155,6 +176,7 @@ def main():
     p=argparse.ArgumentParser()
     p.add_argument("--late",type=int,nargs='+',default=[1,2,3])
     p.add_argument("--early-B",action='store_true')
+    p.add_argument("--shared-thresholds",action='store_true')
     p.add_argument("--pad9",action='store_true')
     p.add_argument("--samples",type=int,default=256)
     args=p.parse_args()
@@ -162,9 +184,11 @@ def main():
     for late in args.late:
         try:
             proof=bitplane_certificate(late)
-            c=build(late,erase_b=args.early_B,pad8=not args.pad9)
+            c=build(late,erase_b=args.early_B,pad8=not args.pad9,
+                 shared_thresholds=args.shared_thresholds)
             cost=resource_counts(c)
             r=dict(late_bits=late,early_B=args.early_B,pad8=not args.pad9,
+               shared_thresholds=args.shared_thresholds,
                coefficients=proof,native=cost,
                toffoli_floor_beats_v9=cost['lower_bound_qc']<V9,
                can_reach_20x_at_floor=cost['lower_bound_qc']<REF/20)
