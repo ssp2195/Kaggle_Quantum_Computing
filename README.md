@@ -1,4 +1,22 @@
-# Benchmark I — current best fully verified 7.33× circuit (2026-11-26)
+# Benchmark I — current best fully verified 7.627× circuit (2026-11-27)
+
+This **independently developed exact phase-padding reduction** uses the original hardware-aware, integer-refitted piecewise-quadratic oracle but eliminates unused padding and corresponding gates from its two residual-dependent variable rotations. Across every legal input, the linear and quadratic phase word each require exactly **five** high-zero padding qubits to avoid wraparound; the constant-phase word retains ten. The original phase scale and arithmetic approximation are unchanged.
+
+- **86 qubits, 2,602 native Toffoli-like gates, 76 fine Z_POW rotations.**
+- **Full independently pinned public competition-verifier mirror: PASS**, on **3,133,452 inputs × 64 = 200,540,928 trajectories**.
+- Rotation-inclusive effective cost: **3,166.288143810582 Toffoli-equivalent**, Q*C **272,300.78036771005**, a **7.627154× reference improvement** and **3.83772% Q*C reduction versus the previous 7.33× winner**.
+- Unchanged worst phase error/tolerance: **0.9687625254666724** at x=244524.
+- Exact KMB SHA-256: `4a232127f01b2a901209427e011ba512dd9fde991b627fbc2761399b17203ee4`.
+- Independently checked minimum residual padding: **5/5**, all 3,133,452 legal inputs; exact normalized approximation also covers **3,145,728 values**.
+- **Rebuild:** `python -m src.benchmark1_best_verified_v5 --output out/best_verified_v5.kmb`
+- **Machine-readable receipt:** `results/benchmark1_best_verified_v5.json`
+- [Full official-style mirror PASS](https://github.com/ssp2195/Kaggle_Quantum_Computing/actions/runs/45995733095) · [Exhaustive minimum-padding proof](https://github.com/ssp2195/Kaggle_Quantum_Computing/actions/runs/45995550913).
+
+The prior `src.benchmark1_best_verified_v4` builder remains retained and SHA-pinned. This is **not an official Kaggle leaderboard submission**. The **20× milestone is not yet achieved**.
+
+---
+
+# Historical — previous fully verified 7.33× circuit (2026-11-26)
 
 This design optimizes **integer coefficients and omitted product columns jointly**, rather than fitting continuous Chebyshev coefficients and truncating afterward. It retains one joint A/B/C lookup, early measurement-corrected A erasure, compact normalization, and uses the lower-cost quadratic multiplier operand orientation.
 
