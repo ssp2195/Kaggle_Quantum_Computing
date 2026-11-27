@@ -1,0 +1,39 @@
+name: benchmark1-v8-sha-pinned-85qubit-repro
+on:
+  push:
+    branches: [benchmark-1]
+    paths:
+      - src/benchmark1_symmetric_square_rows_v7.py
+      - src/benchmark1_phase_pad9_symmetric.py
+      - src/benchmark1_best_verified_v8.py
+      - tests/test_benchmark1_best_v8.py
+      - .github/workflows/benchmark1-v8-repro.yml
+  workflow_dispatch:
+jobs:
+  native-repro:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: python -m pip install numpy scipy pytest pybind11==2.12.0
+      - name: Native KickMix at exactly independently verified pin
+        run: |
+          git clone --depth 1 https://github.com/quantumlib/Qualtran.git /tmp/Qualtran
+          git -C /tmp/Qualtran fetch --depth 1 origin 9a0c11a4ee7697c082fbf8f2e1e8bf4a71fcb453
+          git -C /tmp/Qualtran checkout 9a0c11a4ee7697c082fbf8f2e1e8bf4a71fcb453
+          python -m pip install /tmp/Qualtran/kickmix
+      - name: Independent exact square algebra, full mathematical phase, and quantum coherence tests
+        run: OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 python -m pytest -q tests/test_benchmark1_best_v8.py
+      - name: Deterministic full-domain KMB hash reconstruction
+        run: |
+          mkdir -p out runs
+          OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 python -m src.benchmark1_best_verified_v8 --output out/best_verified_v8.kmb | tee runs/v8-repro.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: original-v8-85qubit-byte-exact-and-coherent
+          path: |
+            out/*.kmb
+            runs/
