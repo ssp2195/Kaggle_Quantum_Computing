@@ -1,0 +1,32 @@
+name: benchmark1-original-verified-parity-compressed-half-square
+on:
+  push:
+    branches: [bench1-architecture-redesign-20261127]
+    paths: ['.github/workflows/benchmark1-half-square-v10.yml']
+jobs:
+  native:
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: python -m pip install numpy scipy pytest pybind11==2.12.0
+      - name: Pinned native KickMix at full verified v9
+        run: |
+          git clone --depth 1 https://github.com/quantumlib/Qualtran.git /tmp/Qualtran
+          git -C /tmp/Qualtran fetch --depth 1 origin 9a0c11a4ee7697c082fbf8f2e1e8bf4a71fcb453
+          git -C /tmp/Qualtran checkout 9a0c11a4ee7697c082fbf8f2e1e8bf4a71fcb453
+          python -m pip install /tmp/Qualtran/kickmix
+      - name: Exhaustive 1,048,576 square and gamma phase-product exact identities
+        run: |
+          mkdir -p runs out
+          set -o pipefail
+          OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m src.benchmark1_half_square_v10 --samples 256 | tee runs/halfsquare-native.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: independent-parity-compressed-square-native-and-coherence
+          path: |
+            runs/
+            out/*.kmb
