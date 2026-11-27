@@ -1,0 +1,30 @@
+name: benchmark1-original-pruned-boolean-coefficient-lookup
+on:
+  push:
+    branches: [bench1-architecture-redesign-20261127]
+    paths: ['.github/workflows/benchmark1-pruned-anf-rom.yml']
+jobs:
+  native:
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: python -m pip install numpy scipy pytest pybind11==2.12.0
+      - name: Pin native benchmark compiler
+        run: |
+          git clone --depth 1 https://github.com/quantumlib/Qualtran.git /tmp/Qualtran
+          git -C /tmp/Qualtran fetch --depth 1 origin 9a0c11a4ee7697c082fbf8f2e1e8bf4a71fcb453
+          git -C /tmp/Qualtran checkout 9a0c11a4ee7697c082fbf8f2e1e8bf4a71fcb453
+          python -m pip install /tmp/Qualtran/kickmix
+      - name: Compile hybrid QROM/ANF decoders and check coherent phases
+        run: |
+          mkdir -p runs
+          set -o pipefail
+          OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m src.benchmark1_pruned_anf_rom | tee runs/pruned-anf.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: benchmark1-pruned-anf-multioutput-native
+          path: runs/
