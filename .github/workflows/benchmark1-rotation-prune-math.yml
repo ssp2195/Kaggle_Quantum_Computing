@@ -1,4 +1,5 @@
 name: benchmark1-original-global-diagonal-phase-pruning
+# Diagnose 20 tightest absolute phase-margin inputs for integer co-refit
 # Compare synthesis-error budget and rotation-inclusive QxC after exact gate pruning
 on:
   push:
