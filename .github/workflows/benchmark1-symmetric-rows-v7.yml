@@ -1,4 +1,5 @@
 name: benchmark1-original-symmetric-row-compressed-square
+# Research branch uses locally pinned v7 cost before production promotion
 on:
   push:
     branches: [bench1-architecture-redesign-20261127]
