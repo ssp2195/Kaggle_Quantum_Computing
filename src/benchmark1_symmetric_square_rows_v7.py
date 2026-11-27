@@ -22,7 +22,7 @@ from .priority1_exact import truncated_product
 from .hybrid_kickmix import resource_counts
 from . import benchmark1_pruned_anf_rom as native
 from .benchmark1_dontcare_boolean_rom import build as build_v7
-from .benchmark1_best_verified_v7 import VERIFIED_QC
+VERIFIED_QC=256476.78036771005
 
 def square_symmetric_rows(builder,x,dest,drop,inverse=False):
     n=len(x)
