@@ -25,7 +25,7 @@ def main():
     for cuts in CONFIGS[:a.max]:
         try:
             report=exp.full_screen(cuts)
-            record=dict(cuts=cuts,**report)
+            record=dict(report)
         except Exception as e:
             record=dict(cuts=cuts,error=type(e).__name__+":"+str(e)[:600])
         output.append(record)
