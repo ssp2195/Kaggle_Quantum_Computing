@@ -69,9 +69,9 @@ def build(*,native_lookup_only=False):
         b.init_lookup(table=table,address=x[LO:],target=c)
     a,sl=c[:wa],c[wa:]
     if native_lookup_only:
-        b.del_lookup(table=table,address=x[LO:],target=c)
-        b.free(c)
-        denormalize_binary_block(b,x,flags,shift)
+        # Deliberately incomplete and unverified: measuring the size of the
+        # initial 14-address-bit QROM *alone* gives a rigorous native
+        # lower bound on every full oracle that uses this architecture.
         return b.finish_circuit()
     with b.mark("intercept_phase"):
         phase_with_pad(b,a,shift,Q,+1,10)
