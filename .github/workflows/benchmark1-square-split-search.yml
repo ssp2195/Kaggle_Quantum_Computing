@@ -1,5 +1,6 @@
 name: benchmark1-original-symmetric-square-split-search
 on:
+  # Corrected inner square substitution (previous probe was a v8 no-op)
   push:
     branches: [bench1-architecture-redesign-20261127]
     paths: ['.github/workflows/benchmark1-square-split-search.yml']
