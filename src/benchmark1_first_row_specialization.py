@@ -29,8 +29,11 @@ def mul_first_row(builder,a,b,dest,drop,inverse=False):
     if len(dest)!=na+nb-drop:raise ValueError("Product output width mismatch")
     js=[j for j in range(nb) if max(0,drop-j)<na]
     if not js:return
-    special=max(js,key=lambda j:(na-max(0,drop-j),-j))
-    order=[special]+[j for j in js if j!=special]
+    # Preserve original increasing j order: KickMix's narrowly sliced
+    # per-row additions rely on carries not escaping their local slice.
+    # A maximal-width first-row reordering violates this invariant.
+    special=js[0]
+    order=list(js)
     if inverse:order=list(reversed(order))
     for j in order:
         first=max(0,drop-j)
@@ -59,8 +62,10 @@ def square_first_row(builder,x,dest,drop,inverse=False):
             start=min(z for z,_ in terms)
             end=max(z for z,_ in terms)
             allrows.append((i,start,end,terms))
-    special=max(allrows,key=lambda row:(row[2]-row[1]+1,-row[0]))
-    order=[special]+[x for x in allrows if x!=special]
+    # Preserve original increasing i order for the same reason as
+    # controlled multiplication: local carry slices may otherwise wrap.
+    special=allrows[0]
+    order=list(allrows)
     if inverse:order=list(reversed(order))
     for i,start,end,terms in order:
         row=builder.alloc_qubits(end-start+2)
