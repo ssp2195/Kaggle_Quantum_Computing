@@ -76,15 +76,19 @@ def pad_certificate(cuts,m,chunk=200000):
           max_linear_by_shift=ml,max_quadratic_by_shift=mq)
 
 def build(cuts,table,encoded):
-    oldexp,oldcut=rom.cc,rom.CUTS
+    oldcut=rom.CUTS
+    oldscreen=rom.cc.full_screen
     oldopt=dc.optimized_coefficients
-    rom.cc=exp
+    # dc.build temporarily overrides the *original shared cc.coefficients*
+    # function. Keep rom.cc pointing at that exact module so the optimized
+    # invalid ROM rows are used, while redirecting the new-cut math screen.
+    rom.cc.full_screen=exp.full_screen
     rom.CUTS=cuts
     dc.optimized_coefficients=lambda policy:(table,encoded)
     try:
         circuit=first.build(True,True)
     finally:
-        rom.cc=oldexp
+        rom.cc.full_screen=oldscreen
         rom.CUTS=oldcut
         dc.optimized_coefficients=oldopt
     return circuit
