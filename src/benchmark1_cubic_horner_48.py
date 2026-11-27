@@ -43,7 +43,7 @@ def coefficient_table():
     nodes=.5+.5*np.cos(np.pi*(np.arange(4)+.5)/4)
     indices=np.arange(1<<P,4<<P,dtype=np.float64)
     v=np.linalg.solve(np.polynomial.polynomial.polyvander(nodes,3),
-       ((indices[:,None]+nodes[None,:])/(1<<P))**(-.5).T).T
+       (((indices[:,None]+nodes[None,:])/(1<<P))**(-.5)).T).T
     # For a decreasing, convex inverse square root, signs are (+,-,+,-).
     raw=np.rint(v*(1<<Q)).astype(np.int64)
     out=np.zeros((1<<(P+2),4),dtype=np.int64)
