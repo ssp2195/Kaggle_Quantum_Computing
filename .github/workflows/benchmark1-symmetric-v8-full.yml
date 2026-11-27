@@ -1,0 +1,55 @@
+name: benchmark1-original-symmetric-row-v8-full-verified
+on:
+  push:
+    branches: [bench1-architecture-redesign-20261127]
+    paths: ['.github/workflows/benchmark1-symmetric-v8-full.yml']
+jobs:
+  full-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: python -m pip install numpy scipy pytest pybind11==2.12.0
+      - name: Native KickMix compiler exact original pin
+        run: |
+          git clone --depth 1 https://github.com/quantumlib/Qualtran.git /tmp/Qualtran
+          git -C /tmp/Qualtran fetch --depth 1 origin 9a0c11a4ee7697c082fbf8f2e1e8bf4a71fcb453
+          git -C /tmp/Qualtran checkout 9a0c11a4ee7697c082fbf8f2e1e8bf4a71fcb453
+          python -m pip install /tmp/Qualtran/kickmix
+      - name: Exact full numerical proof, deterministic KMB and coherent sample
+        run: |
+          mkdir -p out runs mirror
+          set -o pipefail
+          OPENBLAS_NUM_THREADS=1 python -m src.benchmark1_symmetric_rows_verify_candidate --output out/square_rows_v8.kmb --samples 256 | tee runs/v8-native.json
+      - name: Pin original independent public competition verifier to Git blob SHA
+        run: |
+          curl -fLsS --retry 3 https://raw.githubusercontent.com/Inzainos/quantum-circuit-compilation/3dc0c58c5aa303ec8319433aded257aa757d14db/verifiers/invsqrt/verify_submission_invsqrt.py -o mirror/verify_submission_invsqrt.py
+          python - <<'PY'
+          import hashlib
+          b=open('mirror/verify_submission_invsqrt.py','rb').read()
+          assert hashlib.sha1(b'blob '+str(len(b)).encode()+b'\0'+b).hexdigest() == '1fa529e9790a5cb000ee7f084e197c9252e5f9d7'
+          PY
+      - name: All 3,133,452 legal inputs times 64 quantum measurement trajectories
+        run: |
+          OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 python -I mirror/verify_submission_invsqrt.py out/square_rows_v8.kmb --n-p 10 --beta 1 --precision-bits 24 --eta 218 --max-x 3133452 --shots-per-x 64 --batch-size 256 --max-workers 4 --salt quantum-circuit-local-v1 > runs/full_score.json
+          cat runs/full_score.json
+      - name: Gate promotion on PASS, exact resource and lower Q x C
+        run: |
+          python - <<'PY'
+          import json
+          v=json.load(open('runs/full_score.json'))
+          assert v['status']=='PASS',v
+          assert v['verified_shots']==200540928,v
+          assert v['num_qubits']==86 and v['toffoli_count']==2284 and v['rotation_count']==76,v
+          assert float(v['score'])<256476.78036771005,v
+          print('FULLY VERIFIED BETTER SCORE',v['score'])
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: original-carry-safe-symmetric-square-v8-fully-verified
+          path: |
+            runs/
+            out/*.kmb
