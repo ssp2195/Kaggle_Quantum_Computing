@@ -18,7 +18,7 @@ jobs:
           git -C /tmp/Qualtran fetch --depth 1 origin 9a0c11a4ee7697c082fbf8f2e1e8bf4a71fcb453
           git -C /tmp/Qualtran checkout 9a0c11a4ee7697c082fbf8f2e1e8bf4a71fcb453
           python -m pip install /tmp/Qualtran/kickmix
-      - name: Slope uncomputation before quadratic: measured and ANF variants
+      - name: Slope uncomputation before quadratic with measured and ANF variants
         run: |
           mkdir -p runs
           set -o pipefail
