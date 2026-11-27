@@ -1,4 +1,5 @@
 name: benchmark1-original-piecewise-linear-p12
+# QROM-only lower bound after 14-bit unlookup workspace obstruction
 on:
   push:
     branches: [bench1-architecture-redesign-20261127]
@@ -24,10 +25,8 @@ jobs:
           python -m pip install /tmp/Qualtran/kickmix
       - name: Native QROM-only floor before reversible multiplier
         run: |
+          set -o pipefail
           OPENBLAS_NUM_THREADS=1 python -m src.benchmark1_linear12 --lookup-only --output out/linear12_lookup_only.kmb | tee runs/lookup_cost.json
-      - name: Full original linear-phase oracle resources
-        run: |
-          OPENBLAS_NUM_THREADS=1 python -m src.benchmark1_linear12 --output out/linear12.kmb --sample 128 | tee runs/full_cost.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
