@@ -100,12 +100,12 @@ def build(mode="split",first="anf",other="qrom"):
             # (16 unary wires minus four borrowed address wires).
             # A single clean dummy high bit is logically and physically 0;
             # it is needed only by the measured unlookup machinery.
-            b=load(tb,max(wb,12),other)
+            b=load(tb,max(wb,16),other)
             linear(b[:wb])
             erase(tb,b)
         with builder.mark("quadratic_coefficient_lifetime"):
-            c=load(tc,wc,other)
-            quadratic(c)
+            c=load(tc,max(wc,16),other)
+            quadratic(c[:wc])
             erase(tc,c)
     denormalize_binary_block(builder,x,flags,shift)
     return builder.finish_circuit()
