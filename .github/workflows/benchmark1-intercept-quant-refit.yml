@@ -1,0 +1,24 @@
+name: benchmark1-original-intercept-precision-co-refit
+on:
+  push:
+    branches: [bench1-architecture-redesign-20261127]
+    paths: ['.github/workflows/benchmark1-intercept-quant-refit.yml']
+jobs:
+  math:
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: python -m pip install numpy scipy
+      - name: Joint exact omitted-column A/B/C refit with 1 or 2 intercept low bits omitted
+        run: |
+          mkdir -p runs
+          set -o pipefail
+          OPENBLAS_NUM_THREADS=1 python -m src.benchmark1_intercept_quant_refit --trims 1 2 | tee runs/intercept.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: benchmark1-original-intercept-compressed-co-refit
+          path: runs/
